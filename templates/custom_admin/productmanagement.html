@@ -1,0 +1,47 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontal Containers - No Gaps</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: start; /* Align items to the start */
+            align-items: center;
+            margin: 20px;
+            gap: 10px; /* Remove space between items */
+        }
+
+        .box {
+            width: 450px;
+            height: 200px;
+            background-color: #d3d3d3; /* Light grey background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: black;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-right: 0; /* Remove any extra margin */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'custom_admin:products_view' %}" class="box">Product</a>
+        <a href="{% url 'custom_admin:variant_list' %}" class="box">Productvarient</a>
+        
+
+        
+        {% comment %} <div class="box">Product Thumbnail</div> {% endcomment %}
+        
+    </div>
+</body>
+</html>
+{% endblock %}

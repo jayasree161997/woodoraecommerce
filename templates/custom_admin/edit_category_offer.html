@@ -1,0 +1,22 @@
+{% extends 'custom_admin/index.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Edit Offer for {{ offer.category.name }}</h2>
+
+    <form method="post" class="border p-4 rounded shadow-sm bg-light">
+        {% csrf_token %}
+        
+        <!-- Form Fields -->
+        <div class="form-group mb-3">
+            {{ form.as_p }}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary btn-lg">Save Offer</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    {% comment %} body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    } {% endcomment %}
+
+    .form-container {
+        background-color: #fff;
+        padding: 40px 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        max-width: 500px;
+        width: 100%;
+        animation: slide-in 0.5s ease;
+    }
+
+    @keyframes slide-in {
+        from {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    h2 {
+        text-align: center;
+        color: #4169e1;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 25px;
+    }
+
+    form p {
+        margin-bottom: 15px;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #66a6ff;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+
+    .btn-warning {
+        background-color: #f9a825;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        width: 100%;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-top: 15px;
+    }
+
+    .btn-warning:hover {
+        background-color: #f57f17;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Edit Product</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-warning">Update Product</button>
+    </form>
+</div>
+{% endblock %}

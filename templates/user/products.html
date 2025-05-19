@@ -1,0 +1,524 @@
+{% extends "layouts/mainsecond.html" %}
+
+{% load static %}
+
+
+{% block body %}
+<!-- Start Product Section -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Page</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        /* Navbar Placeholder */
+        .navbar {
+            background-color: #fff;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        /* Breadcrumb/Heading Section */
+        .breadcrumb {
+            background-color: #f5f5f5;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .breadcrumb a {
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+
+        .breadcrumb span {
+            color: #777;
+            margin: 0 5px;
+        }
+
+        /* Shop Container */
+        .shop-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        /* Category Card */
+        .category-card {
+            text-align: center;
+            width: 150px;
+        }
+
+        .category-card img {
+            width: 120px;
+            height: 125px;
+            border-radius: 49%;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .category-card img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-card h3 {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #555;
+        }
+        /* Filters */
+        .filter-bar {
+            background-color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+        }
+
+        .filter-group label {
+        font-weight: 600;
+        color: #555;
+        }
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .product-image {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: fit;
+            display:block;
+        }
+        
+        .wishlist {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #fff;
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+        
+        .wishlist span {
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .product-details {
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .product-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .product-details p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .rating-sold {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .rating-sold .stars {
+            color: #e74c3c;
+            font-size: 16px;
+        }
+        
+        .price {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .price .current-price {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .price .original-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-left: 10px;
+        }
+        
+        .price .discount {
+            color: #2ecc71;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .pagination {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .pagination .step-links {
+            display: inline-block;
+            margin: 0 auto;
+        }
+        
+        .pagination a, .pagination span {
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .pagination a:hover {
+            background-color: #f4f4f4;
+        }
+        
+        .pagination .current {
+            font-weight: bold;
+            background-color:rgb(63, 117, 99);
+            color: white;
+            border-color:rgb(56, 88, 72);
+        }
+
+
+
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            margin: 10px;
+        }
+        
+        .filter-group form input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            width: 200px;
+            margin-right: 8px;
+        }
+        
+        .filter-group form button {
+            background-color:rgb(77, 111, 93);
+            color: #fff;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .filter-group form button:hover {
+            background-color:rgb(77, 111, 93);
+        }
+        
+        .filter-group label {
+            margin-right: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .filter-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .filter-group select:hover {
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .filter-group button {
+            background-color:rgb(77, 111, 93);
+            color: #fff;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .filter-group button:hover {
+            background-color:rgb(76, 99, 81);
+        }
+
+        #category, #price-range {
+            background-color:rgb(77, 111, 93);
+            color: #fff;
+            border: 1px solidrgb(77, 111, 93);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        #category:hover, #price-range:hover {
+            background-color:rgb(77, 111, 93);
+            box-shadow: 0px 0px 8px rgba(92, 115, 98, 0.2);
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+            }
+        
+            .filter-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+        
+            .filter-group form input[type="text"],
+            .filter-group select,
+            .filter-group form button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        
+            .filter-group button {
+                width: auto;
+            }
+        }
+           
+        
+ 
+
+    </style>
+</head>
+<body>
+
+
+    <!-- Shop Page Content -->
+    <h1 style="text-align: center; margin: 20px 0;">Explore Our Products</h1>
+    <div class="shop-container">
+        
+         <div class="category-card">
+            {% comment %} <img src="{% static 'C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\static\images\sofa chairs\Screenshot 2025-01-02 200523.png' %}" alt="Table Lamps"> {% endcomment %}
+            <img src="{% static 'images/1d894b841805661ae013069637f5ef1b.jpg' %}" alt="Furniture Image">
+            <h3>Chairs</h3>
+        </div>
+        <div class="category-card">
+            {% comment %} <img src="{% static 'C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\static\images\furniture-for-modern-house-with-neutral-color-schemes-in-modern-grey-sectional-sofa-for-living-room-furniture-also-large-square-fabric-coffee-table-with-rug-area.jpg' %}" alt="Floor Lamps"> {% endcomment %}
+            <img src="{% static 'images/fourseatsofa.jpeg' %}" alt="Sofa">
+            <h3>Sofas</h3>
+        </div>
+        <div class="category-card">
+            {% comment %} <img src="{% static 'C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\static\images\Brilliant_Tips_for_Stone_Types_Newbies.jpg' %}" alt="Study Lamps"> {% endcomment %}
+            <img src="{% static 'images/Brilliant_Tips_for_Stone_Types_Newbies.jpg' %}" alt="Stone Tips">
+            <h3>Beds</h3>
+        </div>
+        <div class="category-card">
+            {% comment %} <img src="{% static 'C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\static\images\home-furniture-traditional-designer-sitting-coffee-table-3-768x768.jpg' %}" alt="Tripod Lamps"> {% endcomment %}
+            <img src="{% static 'images/home-furniture-traditional-designer-sitting-coffee-table-3-768x768.jpg' %}" alt="Coffee Table">
+            <h3>Tables</h3>
+        </div>
+        <div class="category-card">
+            {% comment %} <img src="{% static 'C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\static\images\1.jpg' %}" alt="Lamp Shades"> {% endcomment %}
+            <img src="{% static 'images/1.jpg' %}" alt="Image Description">
+            <h3>Wardrode</h3>
+        </div>
+        <div class="category-card">
+            {% comment %} <img src="{% static 'C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\static\images\4pool-table-lamp-1200x1200h.jpg' %}" alt="Spot Lights"> {% endcomment %}
+            <img src="{% static 'images/4pool-table-lamp-1200x1200h.jpg' %}" alt="Table Lamp">
+            <h3>Lights and Lamps</h3>
+        </div> 
+    </div>
+
+        
+        <div class="filter-bar">
+            <div class="filter-group">
+                <form method="GET" action="{% url 'products' %}">
+                    <input type="text" name="search" placeholder="Search products..." value="{{ request.GET.search|default:'' }}">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="filter-group">
+                <label for="category">Category:</label>
+                <select id="category" onchange="window.location.href=this.value;">
+                    <option value="{% url 'products' %}">All</option>
+                    {% for category in categories %}
+                    <option value="{% url 'products' %}?category_id={{ category.id }}" {% if request.GET.category_id == category.id|stringformat:"s" %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="price-range">Price Range:</label>
+                <select id="price-range" onchange="window.location.href=this.value;">
+                    <option value="?sort=price_low_to_high{% if request.GET.category_id %}&category_id={{ request.GET.category_id }}{% endif %}" {% if request.GET.sort == 'price_low_to_high' %}selected{% endif %}>
+                        Price: Low to High
+                    </option>
+                    <option value="?sort=price_high_to_low{% if request.GET.category_id %}&category_id={{ request.GET.category_id }}{% endif %}" {% if request.GET.sort == 'price_high_to_low' %}selected{% endif %}>
+                        Price: High to Low
+                    </option>
+                    <option value="?sort=name_asc{% if request.GET.category_id %}&category_id={{ request.GET.category_id }}{% endif %}" {% if request.GET.sort == 'name_asc' %}selected{% endif %}>
+                        Name (A-Z)
+                    </option>
+                    <option value="?sort=name_desc{% if request.GET.category_id %}&category_id={{ request.GET.category_id }}{% endif %}" {% if request.GET.sort == 'name_desc' %}selected{% endif %}>
+                        Name (Z-A)
+                    </option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button onclick="window.location.href='{% url 'products' %}'">Clear Filters</button>
+            </div>
+        </div>
+        
+
+        
+        <div class="product-grid">
+          
+            {% for product in products %} 
+            <!-- Product 1 -->  
+            <div class="product-card">
+                <div class="product-image">
+                    <a href="{% url 'products_details'  product.id  %}">
+                        
+                    <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+                    
+                    <div class="wishlist">
+                        <a href="{% url 'add_to_wishlist' product.id %}">
+                            <span>&#9825;</span> <!-- Heart icon -->
+                        </a>
+                    </div>
+                </a>
+                </div>
+                <div class="product-details">
+                    
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.brand }}</p>
+                    <div class="rating-sold">
+                        <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                        <span>(29 Sold)</span>
+                    </div>
+                    <p class="price">
+                        <span class="current-price">₹{{ product.price }}</span>
+                        {% comment %} <span class="original-price">₹{{ product.original_price }}</span> {% endcomment %}
+                        <span class="discount">{{ product.discount }}</span>
+                    </p>
+                </div>
+            </div>          
+            {% endfor %}          
+        </div>
+        <!-- Pagination Controls -->
+<div class="pagination">
+    <span class="step-links">
+        {% if products.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ products.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ products.number }} of {{ products.paginator.num_pages }}
+        </span>
+
+        {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}">Next</a>
+            <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+<script>
+    function applyFilter() {
+        const priceSort = document.getElementById('price-range').value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort', priceSort);
+        window.location.href = url.toString();
+    } 
+
+</script>
+
+</body>
+</html>
+
+{% endblock body %}

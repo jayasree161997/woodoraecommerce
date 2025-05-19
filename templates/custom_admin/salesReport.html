@@ -1,0 +1,120 @@
+{% extends 'custom_admin/index.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center mb-4">Sales Report</h2>
+            <div class="card">
+                <div class="card-body">
+                    <!-- Filter Form -->
+                    <form method="get" class="mb-4">
+                        <div class="form-row align-items-end">
+                            <div class="col">
+                                <label for="filter_option">Filter By:</label>
+                                <select id="filter_option" name="filter_option" class="form-control">
+                                    <option value="">Select...</option>
+                                    <option value="daily" {% if filter_option == 'daily' %}selected{% endif %}>Daily</option>
+                                    <option value="weekly" {% if filter_option == 'weekly' %}selected{% endif %}>Weekly</option>
+                                    <option value="yearly" {% if filter_option == 'yearly' %}selected{% endif %}>Yearly</option>
+                                    <option value="custom" {% if filter_option == 'custom' %}selected{% endif %}>Custom Date Range</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="start_date">Start Date:</label>
+                                <input type="date" id="start_date" name="start_date" class="form-control" value="{{ start_date }}">
+                            </div>
+                            <div class="col">
+                                <label for="end_date">End Date:</label>
+                                <input type="date" id="end_date" name="end_date" class="form-control" value="{{ end_date }}">
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary">Filter</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Download Buttons -->
+                    <form method="get" action="{% url 'custom_admin:sales_report' %}">
+
+                         <input type="hidden" name="filter_option" value="{{ filter_option }}">
+                        <input type="hidden" name="start_date" value="{{ start_date }}">
+                        <input type="hidden" name="end_date" value="{{ end_date }}">
+
+                        <button type="submit" name="download" value="pdf" class="btn btn-primary">Download PDF</button>
+                        <button type="submit" name="download" value="excel" class="btn btn-success">Download Excel</button>
+                    </form>
+
+                    <!-- Sales Report Table -->
+                    <h4>Sales Summary</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Metric</th>
+                                <th scope="col">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Sales</td>
+                                <td>₹{{ total_sales }}</td>
+                            </tr>
+                            {% comment %} <tr>
+                                <td>Total Discounts</td>
+                                <td>₹{{ total_discount }}</td>
+                            </tr> {% endcomment %}
+                            <tr>
+                                <td>Total Coupons Deduction</td>
+                                <td>₹{{ total_coupons }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Sold Products Table -->
+                    <h4 class="mt-4">Products Sold</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product Image</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Quantity Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in sold_products %}
+                            <tr>
+                                <td>
+                                    {% if product.image %}
+                                        <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% else %}
+                                        No Image
+                                    {% endif %}
+                                </td>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.quantity_sold }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">No products sold in this period.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+    .container {
+        max-width: 900px;
+    }
+    .table td img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+</style>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <script>
+        let timer = 60; // 2 minutes in seconds
+
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer');
+            const resendButton = document.getElementById('resend-otp');
+            resendButton.disabled = true;
+
+            const interval = setInterval(() => {
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+
+                timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                timer--;
+
+                if (timer < 0) {
+                    clearInterval(interval);
+                    resendButton.disabled = false;
+                    timerDisplay.textContent = "Expired";
+                }
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', startTimer);
+    </script>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(120deg,#2980b9, #8e44ad);
+            color: #444;
+        }
+
+        .otp-container {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            width: 320px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .otp-container h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .otp-container p {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .otp-input {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .otp-input input {
+            width: 50px;
+            height: 50px;
+            margin: 0 5px;
+            font-size: 1.25rem;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .otp-input input:focus {
+            outline: none;
+            border-color: linear-gradient(120deg,#2980b9, #8e44ad);;
+            box-shadow: 10px 10px 15px rgba(0,0,0,0.05);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: #6a11cb;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #4c0fb8;
+        }
+
+        .btn-disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .timer {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .resend-container {
+            margin-top: 15px;
+        }
+
+        .btn-resend {
+            background: transparent;
+            color: #6a11cb;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-resend:hover {
+            text-decoration: underline;
+        }
+
+        .btn-resend:disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <h2>OTP Verification</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="otp-input">
+                <input type="text" maxlength="6" name="otp" id="otp" required placeholder="Enter OTP" />
+            </div>
+            <button type="submit" class="btn btn-primary">Verify OTP</button>
+        </form>
+        <p class="timer">OTP will expire in <span id="timer">2:00</span></p>
+        <div class="resend-container">
+            <button 
+                id="resend-otp" 
+                class="btn-resend"
+                onclick="location.href='{% url 'resend_otp' %}'"
+                disabled
+            >
+                Resend OTP
+            </button>
+        </div>
+    </div>
+</body>
+</html>

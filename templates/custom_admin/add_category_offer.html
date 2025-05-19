@@ -1,0 +1,58 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .card {
+        border-radius: 15px;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0;
+        font-weight: bold;
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        box-shadow: none;
+    }
+    
+    .btn {
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn:hover {
+        background-color: #155724; /* Darker green on hover */
+    }
+</style>
+
+<!-- Container for the whole content -->
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">✨ Add Offer for Category: <strong>{{ category.name }}</strong></h1>
+        <p class="lead text-muted">Fill in the form below to add a special offer to this category.</p>
+    </div>
+
+    <!-- Offer Form Card -->
+    <div class="card shadow-lg p-4">
+        <div class="card-header bg-info text-white">
+            <h4><strong>Offer Details</strong></h4>
+        </div>
+        <div class="card-body">
+            <!-- The Form Start -->
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Form fields styled -->
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success btn-lg w-100">Save Offer</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

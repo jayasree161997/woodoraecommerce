@@ -1,0 +1,108 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+   
+
+    .offer-form-container {
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        max-width: 550px;
+        width: 100%;
+        animation: popIn 0.5s ease-in-out;
+    }
+
+    @keyframes popIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    h2 {
+        text-align: center;
+        color: #007bff;
+        font-size: 26px;
+        margin-bottom: 30px;
+    }
+
+    form p {
+        margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+        border: 2px solid #cce5ff;
+        border-radius: 8px;
+        outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 15px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>
+
+<div class="offer-form-container">
+    <h2>Add Offer to "{{ product.name }}"</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save Offer</button>
+    </form>
+    <a href="{% url 'custom_admin:products_view' %}" class="btn btn-secondary">Cancel</a>
+</div>
+{% endblock %}

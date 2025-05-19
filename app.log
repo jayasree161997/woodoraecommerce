@@ -1,0 +1,233 @@
+2025-04-04 20:47:49,924 - INFO - C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\payment\views.py changed, reloading.
+2025-04-04 20:48:22,743 - INFO - C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\payment\views.py changed, reloading.
+2025-04-04 20:48:27,693 - DEBUG - Initializing Razorpay client with KEY_ID: rzp_test_MAimzLa32DUYt6
+2025-04-04 20:49:04,363 - DEBUG - Starting new HTTPS connection (1): api.razorpay.com:443
+2025-04-04 20:49:06,130 - DEBUG - https://api.razorpay.com:443 "POST /v1/orders HTTP/1.1" 200 215
+2025-04-04 20:49:06,136 - DEBUG - Order created successfully: {'amount': 1405900, 'amount_due': 1405900, 'amount_paid': 0, 'attempts': 0, 'created_at': 1743779945, 'currency': 'INR', 'entity': 'order', 'id': 'order_QF1l2zXSqEY4fB', 'notes': [], 'offer_id': None, 'receipt': None, 'status': 'created'}
+2025-04-04 20:50:14,414 - DEBUG - Starting new HTTPS connection (1): api.razorpay.com:443
+2025-04-04 20:50:15,246 - DEBUG - https://api.razorpay.com:443 "POST /v1/orders HTTP/1.1" 200 215
+2025-04-04 20:50:15,246 - DEBUG - Order created successfully: {'amount': 1405900, 'amount_due': 1405900, 'amount_paid': 0, 'attempts': 0, 'created_at': 1743780014, 'currency': 'INR', 'entity': 'order', 'id': 'order_QF1mGLXmkjQUDi', 'notes': [], 'offer_id': None, 'receipt': None, 'status': 'created'}
+2025-04-04 21:08:18,802 - DEBUG - Starting new HTTPS connection (1): api.razorpay.com:443
+2025-04-04 21:08:19,954 - DEBUG - https://api.razorpay.com:443 "POST /v1/orders HTTP/1.1" 200 215
+2025-04-04 21:08:19,955 - DEBUG - Order created successfully: {'amount': 1405900, 'amount_due': 1405900, 'amount_paid': 0, 'attempts': 0, 'created_at': 1743781099, 'currency': 'INR', 'entity': 'order', 'id': 'order_QF25M5PNi9GYFa', 'notes': [], 'offer_id': None, 'receipt': None, 'status': 'created'}
+2025-04-04 21:10:37,003 - DEBUG - Starting new HTTPS connection (1): api.razorpay.com:443
+2025-04-04 21:10:37,928 - DEBUG - https://api.razorpay.com:443 "POST /v1/orders HTTP/1.1" 200 215
+2025-04-04 21:10:37,928 - DEBUG - Order created successfully: {'amount': 1405900, 'amount_due': 1405900, 'amount_paid': 0, 'attempts': 0, 'created_at': 1743781237, 'currency': 'INR', 'entity': 'order', 'id': 'order_QF27mghJBMXy1S', 'notes': [], 'offer_id': None, 'receipt': None, 'status': 'created'}
+2025-04-04 21:13:22,669 - DEBUG - Initializing Razorpay client with KEY_ID: rzp_test_MAimzLa32DUYt6
+2025-04-04 21:15:26,566 - DEBUG - Starting new HTTPS connection (1): oauth2.googleapis.com:443
+2025-04-04 21:15:26,796 - DEBUG - https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+2025-04-04 21:17:54,356 - ERROR - Internal Server Error: /signup/
+Traceback (most recent call last):
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: auth_user.username
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\home\views.py", line 122, in signup
+    myuser = User.objects.create_user(username, email, password)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\models.py", line 162, in create_user
+    return self._create_user(username, email, password, **extra_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\models.py", line 156, in _create_user
+    user.save(using=self._db)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\base_user.py", line 62, in save
+    super().save(*args, **kwargs)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 892, in save
+    self.save_base(
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 998, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 1161, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 1202, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\sql\compiler.py", line 1836, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: auth_user.username
+2025-04-04 21:18:08,160 - ERROR - Internal Server Error: /signup/
+Traceback (most recent call last):
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: auth_user.username
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\home\views.py", line 122, in signup
+    myuser = User.objects.create_user(username, email, password)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\models.py", line 162, in create_user
+    return self._create_user(username, email, password, **extra_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\models.py", line 156, in _create_user
+    user.save(using=self._db)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\base_user.py", line 62, in save
+    super().save(*args, **kwargs)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 892, in save
+    self.save_base(
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 998, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 1161, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 1202, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\sql\compiler.py", line 1836, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: auth_user.username
+2025-04-04 21:18:26,239 - ERROR - Internal Server Error: /signup/
+Traceback (most recent call last):
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: auth_user.username
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\Ecommerce\home\views.py", line 122, in signup
+    myuser = User.objects.create_user(username, email, password)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\models.py", line 162, in create_user
+    return self._create_user(username, email, password, **extra_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\models.py", line 156, in _create_user
+    user.save(using=self._db)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\contrib\auth\base_user.py", line 62, in save
+    super().save(*args, **kwargs)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 892, in save
+    self.save_base(
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 998, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 1161, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\base.py", line 1202, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\models\sql\compiler.py", line 1836, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jayas\OneDrive\Desktop\Furniture Ecommerce\djvenv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: auth_user.username
+2025-04-04 21:19:58,387 - DEBUG - Email: idhalmariyam@gmail.com, Password: jayasree@123#16
+2025-04-04 21:20:02,661 - WARNING - Not Found: /login/favicon.png
+2025-04-04 21:20:12,099 - WARNING - Not Found: /products/products_details/6/favicon.png
+2025-04-04 21:20:20,879 - WARNING - Not Found: /add_address/favicon.png
+2025-04-04 21:20:40,094 - DEBUG - Starting new HTTPS connection (1): api.razorpay.com:443
+2025-04-04 21:20:40,624 - DEBUG - https://api.razorpay.com:443 "POST /v1/orders HTTP/1.1" 200 215
+2025-04-04 21:20:40,640 - DEBUG - Order created successfully: {'amount': 1955900, 'amount_due': 1955900, 'amount_paid': 0, 'attempts': 0, 'created_at': 1743781839, 'currency': 'INR', 'entity': 'order', 'id': 'order_QF2IOYOuNx48cg', 'notes': [], 'offer_id': None, 'receipt': None, 'status': 'created'}
+2025-04-04 21:28:00,597 - DEBUG - Initializing Razorpay client with KEY_ID: rzp_test_MAimzLa32DUYt6
+2025-04-04 21:28:26,494 - DEBUG - Starting new HTTPS connection (1): api.razorpay.com:443
+2025-04-04 21:28:27,953 - DEBUG - https://api.razorpay.com:443 "POST /v1/orders HTTP/1.1" 200 215
+2025-04-04 21:28:27,957 - DEBUG - Order created successfully: {'amount': 1405900, 'amount_due': 1405900, 'amount_paid': 0, 'attempts': 0, 'created_at': 1743782307, 'currency': 'INR', 'entity': 'order', 'id': 'order_QF2Qcf3XghJaCn', 'notes': [], 'offer_id': None, 'receipt': None, 'status': 'created'}

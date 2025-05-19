@@ -1,0 +1,97 @@
+{% extends "layouts/mainsecond.html" %}
+{% block body %}
+<style>
+    .confirmation-container {
+        max-width: 800px;
+        margin: 50px auto;
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .confirmation-container h1 {
+        text-align: center;
+        color: #28a745;
+        font-weight: bold;
+    }
+    .order-details p {
+        font-size: 16px;
+        margin: 5px 0;
+        color: #333;
+    }
+    .order-details p strong {
+        color: #007bff;
+    }
+    .product-list {
+        list-style: none;
+        padding: 0;
+    }
+    .product-list li {
+        background: #ffffff;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 5px 0;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .btn-track {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="confirmation-container">
+    <h1>🎉 Order Confirmation</h1>
+    <p class="text-center">Thank you, <strong>{{ order.user.username }}</strong>! Your order has been placed successfully. 🚀</p>
+
+    <div class="order-details">
+        <p><strong>Order ID:</strong> {{ order.id }}</p>
+        <p><strong>User:</strong> {{ order.user.username }}</p>
+        <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+        {% comment %} <p><strong>Transaction ID:</strong> {{ order.cod_transaction_id|default:"N/A" }}</p> {% endcomment %}
+        <p><strong>Transaction ID:</strong> 
+    {% if order.cod_transaction_id %}
+        {{ order.cod_transaction_id }}
+    {% elif order.razorpay_order_id %}
+        {{ order.razorpay_order_id }}
+    {% else %}
+        N/A
+    {% endif %}
+</p>
+        {% if order.coupon and order.discount_amount > 0 %}
+    <p><strong>Coupon Used:</strong> {{ order.coupon.code }}</p>
+    <p><strong>Discount Applied:</strong> ₹{{ order.discount_amount }}</p>
+{% endif %}
+        <p><strong>Total Amount:</strong> ₹{{ order.total_price }}</p>
+        <p><strong>Delivery Address:</strong> 
+            {{ order.address.street_address }}, 
+            {{ order.address.house_no }}, 
+            {{ order.address.postcode }}
+        </p>
+        <p><strong>Delivery Date:</strong> 
+            {% if order.delivery_date %}
+                {{ order.delivery_date|date:"d M Y" }}
+            {% else %}
+                Not Available
+            {% endif %}
+        </p>
+    </div>
+
+    <h3 class="mt-4">🛒 Products Ordered:</h3>
+    <ul class="product-list">
+        {% for item in order.order_items.all %}
+            <li>
+                <span>📦 {{ item.product.name }} - ₹{{ item.price }} x {{ item.quantity }}</span>
+                {% comment %} <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="product-img me-3"> {% endcomment %}
+            </li>
+            
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'track_order' order.id %}" class="btn btn-success btn-track">📍 Track Your Order</a>
+</div>
+
+{% endblock body %}

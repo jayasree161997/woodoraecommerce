@@ -1,0 +1,140 @@
+{% extends "layouts/mainsecond.html" %}
+
+{% load static %}
+
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+        }
+
+        form input, form button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .address-list li {
+            background: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .address-actions a {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="container">
+        <div class="card">
+            <h2>Account Information</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ user_form.as_p }}
+                {{ profile_form.as_p }}
+                {% if request.user.is_superuser %}
+                    <script>
+                        document.querySelectorAll("input").forEach(input => input.disabled = true);
+                    </script>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">Change Profile</button>
+            </form>
+            {% comment %} <form action="{% url 'verify_email_otp' %}" method="get">
+    <button class="btn btn-danger">Change Password</button>
+</form> {% endcomment %}
+        </div>
+        
+        <div class="card">
+            <h2>Billing Addresses</h2>
+            <a href="{% url 'add_Address' %}?next={% url 'user_profile' %}" class="btn btn-primary">Add New Address</a>
+            <ul class="address-list">
+            {% for address in request.user.address_set.all %}
+                <li>
+                    <div>
+                        <strong>Name:</strong> {{ address.first_name }}<br>
+                        <strong>Last Name:</strong> {{ address.last_name }} <br>
+                        <strong>Address:</strong> {{ address.street_address }}<br>
+                    </div>
+                    <span class="address-actions">
+                        <a href="{% url 'edit_address' address.id %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'delete_address' address.id %}" class="btn btn-danger">Delete</a>
+                    </span>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock body %}

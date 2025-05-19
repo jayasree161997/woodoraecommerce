@@ -1,0 +1,67 @@
+{% extends 'custom_admin/index.html' %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Add SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% block content %}
+<script>
+    $(document).ready(function() {
+        // Watch typing inside category input
+        $("input[name='name']").on('blur', function() {
+            var categoryName = $(this).val().trim();
+    
+            if (categoryName.length > 0) {
+                $.ajax({
+                    url: "{% url 'custom_admin:check_category_duplicate' %}",
+                    data: {
+                        'name': categoryName
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.exists) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Duplicate Category',
+                                text: 'A category with this name already exists!',
+                                confirmButtonText: 'OK'
+                            });
+                            // Clear the input box if duplicate found
+                            $("input[name='name']").val('');
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<!-- Container for the whole content -->
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">✨ Add New Category</h1>
+        <p class="lead text-muted">Please fill in the form below to create a new category.</p>
+    </div>
+
+    <!-- Category Form Card -->
+    <div class="card shadow-lg p-4">
+        <div class="card-header bg-info text-white">
+            <h4><strong>Category Details</strong></h4>
+        </div>
+        <div class="card-body">
+            <!-- The Form Start -->
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Form fields styled -->
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success btn-lg w-100">Add Category</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

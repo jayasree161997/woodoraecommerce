@@ -1,0 +1,8 @@
+<!-- initiate_payment.html -->
+<form action="{% url 'payment_callback' %}" method="POST">
+    <!-- Razorpay checkout form fields -->
+    <input type="hidden" name="razorpay_order_id" value="{{ payment.razorpay_order_id }}">
+    <input type="hidden" name="razorpay_payment_id" value="">
+    <input type="hidden" name="razorpay_signature" value="">
+    <!-- Add other required fields and Razorpay checkout button -->
+</form>

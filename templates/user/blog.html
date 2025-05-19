@@ -1,0 +1,39 @@
+<div class="cart-item">
+    <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="product-image">
+    <div class="item-details">
+        <h4>{{ item.product.name }}</h4>
+        {% if item.variant %}
+          <p>Variant: {{ item.variant.name }}</p>
+        {% endif %}
+        <p>Price: ₹{{ item.product.price }}</p>
+        <p>Stock: 
+            {% if item.variant %}
+                {{ item.variant.stock }}
+            {% else %}
+                {{ item.product.stock }}
+            {% endif %}
+        </p>
+
+       
+        <p>
+            Quantity: 
+            <button type="button" onclick="changeQuantity('{{ item.id }}', -1, {{ item.product.price }}, {% if item.variant %}{{ item.variant.stock }}{% else %}{{ item.product.stock }}{% endif %})">−</button>
+            
+            <input type="number" id="quantity-{{ item.id }}" name="quantity" value="{{ item.quantity }}" min="0" max="6" 
+                   onchange="updatePrice('{{ item.id }}', {{ item.product.price }}, {% if item.variant %}{{ item.variant.stock }}{% else %}{{ item.product.stock }}{% endif %})">
+            
+            <button type="button" onclick="changeQuantity('{{ item.id }}', 1, {{ item.product.price }}, {% if item.variant %}{{ item.variant.stock }}{% else %}{{ item.product.stock }}{% endif %})">+</button>
+        </p>
+        
+
+        <p>Total: ₹<span id="total-{{ item.id }}">{{ item.product.price | floatformat:2 }}</span></p>
+
+        {% comment %} <p>Total: <span id="total-{{ item.id }}">₹{{ item.quantity|multiply:item.product.price }}</span></p> {% endcomment %}
+       
+
+
+
+        <a href="{% url 'remove_from_cart' item.product.id %}" class="remove-button">Remove</a>
+        <a href="{% url 'move_to_wishlist' item.product.id %}" class="wishlist-button">Move to Wishlist</a>
+    </div>
+</div>

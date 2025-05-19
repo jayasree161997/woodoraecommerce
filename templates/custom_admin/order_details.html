@@ -1,0 +1,139 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .product-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+        .order-details {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header text-center">
+            <h3>Order Details</h3>
+        </div>
+        <div class="card-body">
+            <div class="order-details">
+                <h5>Order ID: {{ order.id }}</h5>
+                <p><strong>Order Status:</strong> 
+                    <span class="status-badge 
+                        {% if order.status == 'Processing' %}status-processing
+                        {% elif order.status == 'Delivered' %}status-delivered
+                        {% elif order.status == 'Cancelled' %}status-cancelled
+                        {% endif %}">
+                        {{ order.status }}
+                    </span>
+                </p>
+                <p>Transaction ID:
+                    {% if order.payment_method|lower == "razorpay" and order.razorpay_payment_id %}
+                        {{ order.razorpay_payment_id }}
+                    {% elif order.payment_method|lower == "cash_on_delivery" and order.cod_transaction_id %}
+                        {{ order.cod_transaction_id }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+                <p>Customer Name: {{ order.user.username }}</p>
+                <p>Payment Method: {{ order.payment_method }}</p>
+                {% if order.coupon and order.discount_amount > 0 %}
+                <p><strong>Coupon Used:</strong> {{ order.coupon.code }}</p>
+                <p><strong>Discount Applied:</strong> ₹{{ order.discount_amount }}</p>
+            {% endif %}
+                <p>Total Amount: ₹{{ order.total_price }}</p>
+                    <p>Total Amount: ₹{{ order.total_price }}</p>
+                    <h3>Shipping Address</h3>
+                {% comment %} {% if order.address %}
+                     <p><strong>First Name:</strong> {{ order.address.first_name }}</p>
+                     <p><strong>Last Name:</strong> {{ order.address.last_name }}</p>
+                     <p><strong>Mobile:</strong> {{ order.address.mobile }}</p>
+                     <p><strong>Street Address:</strong> {{ order.address.street_address }}</p>
+                     <p><strong>House No:</strong> {{ order.address.house_no }}</p>
+                     <p><strong>Postcode:</strong> {{ order.address.postcode }}</p>
+                {% else %}
+                    <p>No shipping address available.</p>
+                {% endif %} {% endcomment %}
+                                   {% if order.address %}
+    <p><strong>First Name:</strong> {{ order.address.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ order.address.last_name }}</p>
+    <p><strong>Mobile:</strong> {{ order.address.mobile }}</p>
+    <p><strong>Street Address:</strong> {{ order.address.street_address }}</p>
+    <p><strong>House No:</strong> {{ order.address.house_no }}</p>
+    <p><strong>Postcode:</strong> {{ order.address.postcode }}</p>
+{% elif order.first_name %}
+    <p><strong>First Name:</strong> {{ order.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ order.last_name }}</p>
+    <p><strong>Mobile:</strong> {{ order.mobile }}</p>
+    <p><strong>Street Address:</strong> {{ order.street_address }}</p>
+    <p><strong>House No:</strong> {{ order.house_no }}</p>
+    <p><strong>Postcode:</strong> {{ order.postcode }}</p>
+{% else %}
+    <p>No shipping address available.</p>
+
+{% endif %}
+                </p>
+                <p>Delivery Date: {{ order.delivery_date|date:"d M Y" }}</p>
+
+            </div>
+            <h5>Products Ordered:</h5>
+            <ul class="list-group">
+                {% for item in order.order_items.all %}
+                <li class="list-group-item d-flex align-items-center">
+                    <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="product-img me-3">
+                    <div>
+                        <p><strong>Product Name:</strong> {{ item.product.name }}</p>
+                        <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+                        <p><strong>Amount:</strong> ₹{{ item.product.price }}</p>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-center text-muted">No products available.</li>
+                {% endfor %}
+            </ul>
+            <div class="text-center mt-4">
+                <a href="{% url 'custom_admin:order_management' %}" class="btn btn-secondary">Back to Order Management</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+{% endblock %}

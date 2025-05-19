@@ -1,0 +1,96 @@
+
+{% load static %}
+
+<title>Navbar with Cart</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#cart-icon').click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '{% url "cart_detail" %}',
+                    type: 'GET',
+                    success: function(response) {
+                        $('#cart-modal .modal-body').html(response.html);
+                        $('#cart-modal').modal('show');
+                    }
+                });
+            });
+        });
+    </script>
+<!-- Start Header/Navigation -->
+<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+
+    <div class="container">
+        <a class="navbar-brand" href="index.html">WOODORA<span>.</span></a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsFurni">
+            <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+                {% comment %} <li class="nav-item active"> {% endcomment %}
+                    <a class="nav-link" href="{% url 'index' %}">Home</a>
+                {% comment %} </li> {% endcomment %}
+                 {% if user.is_authenticated %}
+                <li><a class="nav-link" href="{% url 'products' %}">Shop</a></li>
+                <li><a class="nav-link" href="{% url 'wishlist' %}">Wishlist</a></li>
+                {% endif %} 
+
+            </ul>
+
+            <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{% static 'images/user.svg' %}" alt="User">
+                        {% if user.is_authenticated %}
+                           <span>{{ user.username }}</span>
+                        {% endif %}
+                    </a>
+                    
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'user_profile' %}">My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders</a></li>
+                            <li><a class="dropdown-item" href="{% url 'wallet' %}">My Wallet</a></li>
+                            {% comment %} <li><a class="dropdown-item" href="{% url 'wishlist' %}">My Wishlist</a></li> {% endcomment %}
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        {% else %}
+                            <li><a class="dropdown-item" href="{% url 'signup' %}">Register</a></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+                {% if user.is_authenticated %}
+                <!-- Wishlist Icon -->
+            
+            <li>
+                <a class="nav-link" href="{% url 'cart_detail' %}"><img src="{% static 'images/cart.svg' %}">
+                    <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ cart_count }}
+                    </span>
+                </a>
+            </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="modal fade" id="cart-modal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Your Shopping Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Cart items will be loaded here via AJAX -->
+                </div>
+            </div>
+        </div>
+    </div>
+        
+</nav>
+
+ 

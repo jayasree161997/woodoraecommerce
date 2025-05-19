@@ -1,0 +1,27 @@
+{% extends 'custom_admin/index.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Edit Coupon: <strong>{{ coupon.code }}</strong></h2>
+
+    <form method="post" class="border p-4 rounded shadow-sm bg-light">
+        {% csrf_token %}
+        
+        <!-- Form Fields -->
+        <div class="form-group mb-3">
+            {{ form.as_p }}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-success btn-lg">Save Changes</button>
+        </div>
+        
+        <!-- Cancel Button -->
+        <div class="form-group text-center mt-2">
+            <a href="{% url 'custom_admin:coupon_management' %}" class="btn btn-secondary btn-lg">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Failed</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Payment Failed!',
+            text: 'Your transaction was unsuccessful. Please try again later.',
+            confirmButtonText: 'Go Back'
+        }).then(() => {
+              // Redirect to home or retry page
+            window.location.href = "{% url 'my_orders' %}";
+        });
+    </script>
+</body>
+</html>

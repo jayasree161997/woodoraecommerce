@@ -1,0 +1,35 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Container for the page content -->
+<div class="container mt-5">
+    <!-- Page Title -->
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">✨ Add New Coupon</h1>
+        <p class="lead text-muted">Fill in the form below to create a new coupon for your store.</p>
+    </div>
+
+    <!-- Form Card for Coupon -->
+    <div class="card shadow-lg p-4">
+        <div class="card-header bg-info text-white">
+            <h4><strong>Coupon Details</strong></h4>
+        </div>
+        <div class="card-body">
+            <!-- Coupon Form Start -->
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Form Fields Styled -->
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success btn-lg w-100">Save Coupon</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

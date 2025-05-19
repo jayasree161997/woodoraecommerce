@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Woodora - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        body {  
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+        }
+
+        .sidebar .app-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar .nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .sidebar .nav-link.active {
+            background-color: #495057;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #495057;
+            border-radius: 5px;
+        }
+
+        .logout-button {
+            margin-top: auto;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .logout-button button {
+            background-color: #dc3545;
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button button:hover {
+            background-color: #c82333;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .content h1 {
+            font-size: 2rem;
+        }
+
+        .product-table {
+            margin-top: 20px;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .product-table th {
+            text-align: center;
+        }
+
+        .product-table td {
+            text-align: center;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .product-actions button {
+            font-size: 0.875rem;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-section .form-control {
+            width: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="app-name">Woodora</div>
+        <a href="#dashboard" class="nav-link">Dashboard</a>
+        <a href="#products" class="nav-link" onclick="showProductsPage()">Products</a>
+        <a href="#categories" class="nav-link">Categories</a>
+        <a href="#users" class="nav-link">Users</a>
+        <div class="logout-button">
+            <button>Logout</button>
+        </div>
+
+    </div>
+
+    <div class="content">
+        <h1>Welcome to the Woodora Admin Panel</h1>
+        <p>Use the navigation on the left to manage your dashboard, products, categories, and users.</p>
+
+        <div id="products-page" style="display: none;">
+            <h2>Users</h2>
+
+            <!-- Filter Section -->
+            {% comment %} <div class="filter-section">
+                <input type="text" class="form-control" placeholder="Search products" id="productSearch">
+                <button class="btn btn-primary">Add Product</button>
+            </div> {% endcomment %}
+
+            <table class="table table-bordered product-table">
+                <thead>
+                    <tr>
+                        <th>SL No</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Registered</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        
+                        <td>##</td>
+                        <td>jayasree</td>
+                        <td>123456789</td>
+                        <td>jayasrees317@gmail.com</td>
+                        <td>09-10-2024</td>
+                        <td>Active</td>
+                        <td class="product-actions">
+                            <button class="btn btn-warning btn-sm">block</button>
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                        </td>
+                    </tr>
+                    {% comment %} <tr>
+                        <td><img src="example2.jpg" alt="Product Image" style="width: 50px; height: 50px;"></td>
+                        <td>Dining Table</td>
+                        <td>Modern dining table for 6.</td>
+                        <td>20</td>
+                        <td>Furniture</td>
+                        <td>White</td>
+                        <td>$300</td>
+                        <td>15% Off</td>
+                        <td>Apply</td>
+                        <td>Available</td>
+                        <td class="product-actions">
+                            <button class="btn btn-warning btn-sm">Edit</button>
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                        </td>
+                    </tr> {% endcomment %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function showProductsPage() {
+            document.querySelector('.content h1').style.display = 'none';
+            document.querySelector('.content p').style.display = 'none';
+            document.querySelector('#products-page').style.display = 'block';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+<div id="products-page" style="display: none;">
+    <h2>Manage Products</h2>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <input type="text" class="form-control" placeholder="Search products" id="productSearch">
+        <button class="btn btn-primary">Add Product</button>
+    </div>
+
+    <table class="table table-bordered product-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Item</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Color</th>
+                <th>Base Price</th>
+                <th>Offer</th>
+                <th>Offer Action</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><img src="example.jpg" alt="Product Image" style="width: 50px; height: 50px;"></td>
+                <td>Wooden Chair</td>
+                <td>High-quality wooden chair.</td>
+                <td>50</td>
+                <td>Furniture</td>
+                <td>Brown</td>
+                <td>$120</td>
+                <td>10% Off</td>
+                <td>Apply</td>
+                <td>Available</td>
+                <td class="product-actions">
+                    <button class="btn btn-warning btn-sm">Edit</button>
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td><img src="example2.jpg" alt="Product Image" style="width: 50px; height: 50px;"></td>
+                <td>Dining Table</td>
+                <td>Modern dining table for 6.</td>
+                <td>20</td>
+                <td>Furniture</td>
+                <td>White</td>
+                <td>$300</td>
+                <td>15% Off</td>
+                <td>Apply</td>
+                <td>Available</td>
+                <td class="product-actions">
+                    <button class="btn btn-warning btn-sm">Edit</button>
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+
+
+
+
+
+
+
+
+<h2>Products</h2>
+<div class="filter-section">
+    <input type="text" class="form-control" placeholder="Search products" id="productSearch">
+    <button class="btn btn-primary">Add Product</button>
+</div>
+<!-- Products Table -->
+<div class="products-table-container">
+    <table class="table table-bordered product-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Item</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Color</th>
+                <th>Base Price</th>
+                <th>Offer</th>
+                <th>Offer Action</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><img src="example.jpg" alt="Product Image" style="width: 50px; height: 50px;"></td>
+                <td>Wooden Chair</td>
+                <td>High-quality wooden chair.</td>
+                <td>50</td>
+                <td>Furniture</td>
+                <td>Brown</td>
+                <td>$120</td>
+                <td>10% Off</td>
+                <td>Apply</td>
+                <td>Available</td>
+                <td class="product-actions">
+                    <button class="btn btn-warning btn-sm">Edit</button>
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td><img src="example2.jpg" alt="Product Image" style="width: 50px; height: 50px;"></td>
+                <td>Dining Table</td>
+                <td>Modern dining table for 6.</td>
+                <td>20</td>
+                <td>Furniture</td>
+                <td>White</td>
+                <td>$300</td>
+                <td>15% Off</td>
+                <td>Apply</td>
+                <td>Available</td>
+                <td class="product-actions">
+                    <button class="btn btn-warning btn-sm">Edit</button>
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,535 @@
+{% extends "layouts/mainsecond.html" %}
+{% load static %}
+{% load cart_extras %}
+
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+
+    <title>Cart</title>
+    <style>
+        /* Your CSS styles */
+        /* Apply a soft background color to the page */
+        body {
+            background-color: #f9f9f9; /* Light gray for a clean look */
+            color: #333; /* Ensure text is easy to read */
+        }
+        
+        /* Background for cart items section */
+        .cart-items {
+            background-color: #ffffff; /* White for a clean, professional look */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        
+        /* Background for cart summary section */
+        .cart-summary {
+            background-color:rgba(240, 236, 236, 0.94); /* Very light gray */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Highlight buttons with soft colors */
+        .apply-coupon-button,
+        .checkout-button,
+        .remove-button,
+        .wishlist-button {
+            background-color: #e3f2fd; /* Light blue */
+            color: #0277bd; /* Complementary blue text */
+            border: none;
+            border-radius: 5px;
+        }
+        
+        .apply-coupon-button:hover,
+        .checkout-button:hover,
+        .remove-button:hover,
+        .wishlist-button:hover {
+            background-color: #bbdefb; /* Slightly darker blue for hover effect */
+            color: #01579b;
+        }
+        
+        /* General Page Layout */
+        .cart-page {
+            display: flex;
+            justify-content: space-between; /* Align left and right sections */
+            gap: 20px; /* Add spacing between sections */
+        }
+        
+        /* Left Section: Cart Items */
+        .cart-items {
+            flex: 3; /* Takes more space (70% width) */
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .product-image {
+            width: 120px; /* Image size */
+            height: auto;
+            margin-right: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc; /* Add a soft border */
+        }
+        
+        .item-details h4 {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .item-details p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .remove-button,
+        .wishlist-button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            border: none;
+            background-color: #ff4d4d;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .remove-button:hover {
+            background-color: #ff6666;
+        }
+        
+        /* Right Section: Cart Summary */
+        .cart-summary {
+            flex: 1; /* Takes less space (30% width) */
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        
+        .cart-summary h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .cart-summary p {
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        
+        .apply-coupon-button,
+        .checkout-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        
+        .apply-coupon-button:hover,
+        .checkout-button:hover {
+            background-color: #45a049;
+        }
+        
+        /* Coupon List */
+        #couponList {
+            display: none; /* Initially hidden */
+            list-style-type: none;
+            padding: 10px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        #couponItems li {
+            margin-bottom: 10px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .cart-page {
+                flex-direction: column;
+            }
+        
+            .cart-summary {
+                margin-top: 20px;
+            }
+        }
+        #couponList {
+            display: none; /* Initially hidden */
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            position: relative; /* Needed for positioning the close button */
+            background-color: #ffffff; /* White background for contrast */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a slight shadow */
+        }
+        
+        #closeCouponList {
+            position: absolute; /* Allows positioning inside the couponList */
+            top: 5px; /* Adjust based on your design */
+            right: 10px;
+            cursor: pointer; /* Shows a pointer cursor for the button */
+            font-size: 18px;
+            color: #ff4d4d; /* Light red for the close button */
+        }
+        
+        #closeCouponList:hover {
+            color: #ff6666; /* Slightly darker red on hover */
+        }
+        .unavailable {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .unavailable .product-image {
+            filter: blur(3px);
+        }
+        
+        .unavailable .item-details {
+            color: #999;
+        }
+        
+        .unavailable .text-danger {
+            color: red !important;
+            font-weight: bold;
+        }
+        .btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+        
+        
+    </style>
+    <script>
+        function changeQuantity(itemID, change, price, stock) {
+            let quantityInput = document.getElementById('quantity-' + itemID);
+            let newQuantity = parseInt(quantityInput.value) + change;
+        
+            updatePrice(itemID, price, stock, newQuantity);
+        }
+        
+        function updatePrice(itemID, price, stock, newQuantity = null) {
+            let quantityInput = document.getElementById('quantity-' + itemID);
+            let totalItemPrice = document.getElementById('total-' + itemID);
+            let cartTotalPrice = document.getElementById('cart-total-price');
+            let cartTotalItems = document.getElementById('cart-total-items');
+        
+            let quantity = newQuantity !== null ? newQuantity : parseInt(quantityInput.value);
+        
+            // Set quantity limits
+            let maxAllowed = 5;  
+            let minAllowed = 1;  
+        
+            // Check if quantity is out of range
+            if (quantity > maxAllowed) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limit Reached',
+                    text: 'you can add a maximum of ' + maxAllowed + ' items.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+                quantity = maxAllowed;
+            } else if (quantity < minAllowed) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Quantity',
+                    text: 'Minimum quantity should be ' + minAllowed,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                });
+                quantity = minAllowed;
+            } else if (quantity > stock) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Stock Limit',
+                    text: 'Maximum available stock is ' + stock,
+                    confirmButtonColor: '#ffcc00',
+                    confirmButtonText: 'OK'
+                });
+                quantity = stock;
+            }
+        
+            quantityInput.value = quantity; // Set the corrected quantity in the input field
+        
+            let itemTotal = price * quantity;
+            totalItemPrice.innerText = '' + itemTotal.toFixed(2);
+        
+            // AJAX call to update the backend
+            fetch("{% url 'update_cart_quantity' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    item_id: itemID,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("AJAX response:", data);
+                if (data.success) {
+                    cartTotalPrice.innerText = '' + data.total_price.toFixed(2);
+                    cartTotalItems.innerText = data.total_items;
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: 'Error updating cart: ' + data.error,
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'Try Again'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error updating cart:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Network Error',
+                    text: 'Could not update cart. Please try again.',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Retry'
+                });
+            });
+        }        
+        
+
+
+
+
+
+
+        $(document).ready(function() {
+            $("#showCoupons").click(function() {
+                $.ajax({
+                    url: "{% url 'available_coupons' %}",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        let couponList = $("#couponItems");
+                        couponList.empty(); // Clear previous results
+                        
+                        if (response.coupons.length > 0) {
+                            response.coupons.forEach(function(coupon) {
+                                couponList.append(`<li><strong>${coupon.code}</strong> - ${coupon.discount}% off</li>`);
+                            });
+                            $("#couponList").show(); 
+                            // Show the coupon list
+                        } else {
+                            couponList.append("<li>No coupons available</li>");
+                            $("#couponList").show();
+                        }
+                    },
+                    error: function() {
+                        alert("Error fetching coupons. Please try again.");
+                    }
+                });
+            });
+        });
+        
+        $("#closeCouponList").click(function() {
+            $("#couponList").hide(); // Hide the coupon list
+        });
+
+ 
+
+
+
+
+
+        function checkStockUpdates() {
+            fetch("{% url 'check_stock_updates' %}")  // Call the Django view
+            .then(response => response.json())
+            .then(data => {
+                if (data.updated) {
+                    location.reload();  // Reload the page if stock has changed
+                }
+            })
+            .catch(error => console.error("Error checking stock updates:", error));
+        }
+    
+        setInterval(checkStockUpdates, 5000);
+
+
+        document.getElementById('showCoupons').addEventListener('click', function() {
+            var couponList = document.getElementById('couponList');
+            couponList.style.display = couponList.style.display === 'none' ? 'block' : 'none';
+        });
+    
+        // Close the coupons list
+        document.getElementById('closeCouponList').addEventListener('click', function() {
+            document.getElementById('couponList').style.display = 'none';
+        });
+
+
+
+
+        document.querySelectorAll('.remove-item').forEach(button => {
+    button.addEventListener('click', function (event) {
+        event.preventDefault();
+        let url = this.getAttribute('href');
+
+        fetch(url, { method: 'GET' })
+            .then(response => location.reload())  // ✅ Reloads cart immediately
+            .catch(error => console.error("Error removing product:", error));
+    });
+});
+    </script>
+    
+</head>
+<body>
+    <h1>Your Shopping Cart</h1>
+    <div class="cart-page">
+        <div class="cart-items">
+            {% for item in cart_items %}
+            {% comment %} <div class="cart-item {% if not item.product.category.is_active %}unavailable{% endif %}"> {% endcomment %}
+            <div class="cart-item {% if not item.product.category.is_active or item.product.stock == 0 %}unavailable{% endif %}">
+                <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="product-image">
+                
+                <div class="item-details">
+                    <h4>{{ item.product.name }}</h4>
+            
+                    {% comment %} {% if not item.product.category.is_active %} {% endcomment %}
+                    {% if not item.product.category.is_active or item.product.stock == 0 %}
+                         <p class="text-danger">🚫This product is currently unavailable</p>
+                    {% else %}
+                        <p>Price: ₹{{ item.price }}</p>
+                        <p>Stock: {{ item.product.stock }}</p>
+
+                    {% endif %}
+                    
+            
+                    {% comment %} {% if item.variant %}
+                      <p>Variant: {{ item.variant.name }}</p>
+                    {% endif %}
+                   
+                    <p>Price: ₹{{ item.price }}</p>
+
+                    <p>Stock: 
+                        {% if item.variant %}
+                            {{ item.variant.stock }}
+                        {% else %}
+                            {{ item.product.stock }}
+                        {% endif %}
+                    </p> {% endcomment %}
+            
+                    <p>
+                        Quantity:
+                        {% comment %} <button type="button" onclick="changeQuantity('{{ item.id }}', -1, {{ item.price }}, {% else %}{{ item.product.stock }}{% endif %})" {% if not item.product.category.is_active %}disabled{% endif %}>−</button> {% endcomment %}
+                        <button type="button" onclick="changeQuantity('{{ item.id }}', -1, {{ item.price }}, {{ item.product.stock }})" 
+                                {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>−</button>
+            
+                       
+                         <input type="number" id="quantity-{{ item.id }}" name="quantity" value="{{ item.quantity }}" min="0" max="6"
+                               onchange="updatePrice('{{ item.id }}', {{ item.price }}, {{ item.product.stock }})"
+                               {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>
+            
+                        
+                          <button type="button" onclick="changeQuantity('{{ item.id }}', 1, {{ item.price }}, {{ item.product.stock }})" 
+                                {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>+</button>
+                    </p>
+            
+                    
+                    <p>Total: ₹<span id="total-{{ item.id }}">{{ item.price|multiply:item.quantity|floatformat:2 }}</span></p>
+
+
+                    <a href="{% url 'remove_from_cart' item.product.id %}" class="remove-button">Remove</a>
+                    <a href="{% url 'move_to_wishlist' item.product.id %}" class="wishlist-button">Move to Wishlist</a>
+                </div>
+            </div>
+            {% if not item.product.category.is_active or item.product.stock == 0 %}
+        <div class="remove-container">
+            <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-danger btn-sm">Remove</a>
+        </div>
+        {% endif %}
+            
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <h3>Cart Summary</h3>
+            <p>Total Items: <span id="cart-total-items">{{ total_items }}</span></p>
+        
+            {% if cart.coupon_code %}
+                <p>Original Price After Offer: ₹<del>{{ total_after_offer|floatformat:2 }}</del></p>
+                <p>Coupon Discount ({{ cart.coupon_code }}): ₹{{ discount_amount|default:0|floatformat:2 }}</p>
+                <p><strong>Total After Discount: ₹<span id="cart-total-price">{{ final_price|floatformat:2 }}</span></strong></p>
+                <p>Coupon Applied: <strong>{{ cart.coupon_code }}</strong></p>
+            <a href="{% url 'remove_coupon' %}" class="remove-coupon-button">Remove Coupon</a>
+            {% else %} 
+                    <p>Total Price : ₹<span id="cart-total-price">{{ total_after_offer|floatformat:2 }}</span></p>
+    
+        <form method="post" action="{% url 'apply_coupon' %}" class="coupon-form">
+            {% csrf_token %}
+            {{ coupon_form.as_p }}
+            <button type="submit" class="apply-coupon-button">Apply Coupon</button>
+        </form>
+    
+    {% endif %}
+ 
+            <button id="showCoupons" class="btn btn-secondary">Available Coupons</button>
+             <div id="couponList" style="display: none; border: 1px solid #ddd; padding: 10px; margin-top: 10px; position: relative;">
+             <span id="closeCouponList" style="position: absolute; top: 5px; right: 10px; cursor: pointer; font-weight: bold;">&times;</span>
+             <ul id="couponItems"></ul>
+
+    {% if available_coupons %}
+    {% for coupon in available_coupons %}
+    <div class="mb-3 p-3 shadow-sm" style="border: 1px solid #ddd; border-left: 5px solid #28a745; border-radius: 8px;">
+        <h5 class="text-success">{{ coupon.code }} – {{ coupon.discount }}% OFF</h5>
+        <p>{{ coupon.description }}</p>
+        
+        {% if coupon.code|lower == "monsoon" %}
+            {% if total_after_offer < 30000 %}
+                <p class="text-danger">🚫 Requires minimum purchase of ₹30,000</p>
+            {% else %}
+                <p class="text-success">✅ Eligible for Monsoon Offer!</p>
+            {% endif %}
+        {% endif %}
+    
+        <p><strong>Valid From:</strong> {{ coupon.valid_from }} | <strong>Until:</strong> {{ coupon.valid_until }}</p>
+        <p><Strong> Purchase Above 30000 Coupoun will be Available </strong></p>
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="text-muted">No coupons available at the moment.
+       
+    </p>
+{% endif %}
+</div>
+
+
+        
+            <a href="{% url 'checkoutpage' %}" class="checkout-button">Proceed to Checkout</a>
+        
+        </div>
+    </div>
+</body>
+</html>
+{% endblock body %}

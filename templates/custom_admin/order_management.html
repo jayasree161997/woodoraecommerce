@@ -1,0 +1,178 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .table {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+        }
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status-processing { background-color: #ffc107; color: black; }
+        .status-delivered { background-color: #28a745; color: white; }
+        .status-cancelled { background-color: #dc3545; color: white; }
+        .status-warning { background-color: #ffcc00; color: black; }
+        .status-success { background-color: #28a745; color: white; }
+        .status-danger { background-color: #dc3545; color: white; }
+        .action-buttons a { margin: 5px; }
+    </style>
+</head>
+<body>
+
+{% if messages %}
+<div class="container">
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container">
+    <h2 class="text-center mb-4">Order Management</h2>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Order No</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Product</th>
+                <th>Payment Method</th>
+                <th>Total (₹)</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>View</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders|dictsortreversed:"id" %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                
+                <td>
+                    {% for item in order.order_items.all %}
+                        <div class="d-flex align-items-center mb-2">
+                            <span>{{ item.product.name }}</span>
+                        </div>
+                    {% empty %}
+                        <span class="text-muted">No products</span>
+                    {% endfor %}
+                </td>
+        
+                <td>{{ order.payment_method }}</td>
+                <td>₹{{ order.total_price }}</td>
+                
+                <td>
+                    <span class="status-badge 
+                        {% if order.status == 'Processing' %}status-processing
+                        {% elif order.status == 'Delivered' %}status-delivered
+                        {% elif order.status == 'Cancelled' %}status-cancelled
+                        {% elif order.status == 'Return Requested' %}status-warning
+                        {% elif order.status == 'Return Accepted' %}status-success
+                        {% elif order.status == 'Return Rejected' %}status-danger
+                        {% endif %}">
+                        {{ order.status }}
+                    </span>
+                </td>
+
+                <td class="action-buttons">
+                    {% if order.status == "Return Requested" %}
+                        <a href="{% url 'custom_admin:change_order_status' order.id 'Return Accepted' %}" class="btn btn-success btn-sm">
+                            Accept Return
+                        </a>
+                        <a href="{% url 'custom_admin:change_order_status' order.id 'Return Rejected' %}" class="btn btn-danger btn-sm">
+                            Reject Return
+                        </a>
+                    
+                    {% elif order.status == "Return Accepted" %}
+                        <a href="{% url 'custom_admin:change_order_status' order.id 'Return Completed' %}" class="btn btn-primary btn-sm">
+                            Return Completed
+                        </a>
+                   
+                    {% elif order.status == "Return Completed" %}
+                        <span class="text-primary">Return Completed ✅</span>
+                        <br>
+                        <span class="text-success">
+                            Refund Processed: ₹{{ order.total_price }}
+                        </span>
+                    
+                    {% elif order.status == "Return Rejected" %}
+                        <span class="text-danger">Return Denied</span>
+
+                    {% elif order.status == "Delivered" %}
+                        <span class="text-success">Delivered ✅</span>
+
+                    {% elif order.status != "Cancelled" %}
+                        <a href="{% url 'custom_admin:change_order_status' order.id 'Processing' %}" class="btn btn-warning btn-sm">Process</a>
+                        <a href="{% url 'custom_admin:change_order_status' order.id 'Delivered' %}" class="btn btn-success btn-sm">Deliver</a>
+                        <a href="{% url 'custom_admin:change_order_status' order.id 'Cancelled' %}" class="btn btn-danger btn-sm">Cancel</a>
+                    
+                    {% else %}
+                        <span class="text-danger">Already canceled by customer</span>
+                    {% endif %}
+                </td>
+
+                <td class="action-buttons">
+                    <a href="{% url 'custom_admin:view_order_details' order.id %}" class="btn btn-info btn-sm">View</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center text-muted">No orders available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if orders.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ orders.previous_page_number }}">Previous</a></li>
+            {% endif %}
+
+            <li class="page-item disabled"><a class="page-link">Page {{ orders.number }} of {{ orders.paginator.num_pages }}</a></li>
+
+            {% if orders.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ orders.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ orders.paginator.num_pages }}">Last</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+{% endblock %}

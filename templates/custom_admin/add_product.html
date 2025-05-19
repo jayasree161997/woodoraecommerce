@@ -1,0 +1,73 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    {% comment %} body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    } {% endcomment %}
+
+    .form-container {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        max-width: 500px;
+        width: 100%;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #ff6b6b;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    form p {
+        margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #fda085;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+
+    button {
+        background: #ff6b6b;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        width: 100%;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-top: 15px;
+    }
+
+    button:hover {
+        background: #d94f4f;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Add Product</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Product</button>
+    </form>
+</div>
+{% endblock %}

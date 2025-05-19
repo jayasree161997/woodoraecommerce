@@ -1,0 +1,23 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-4">
+    <h1 class="text-center text-danger mb-4">Delete Offer for {{ offer.category.name }}</h1>
+
+    <form method="post" class="border p-4 rounded shadow-sm bg-light">
+        {% csrf_token %}
+        
+        <p class="lead">Are you sure you want to delete this offer?</p>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-danger btn-lg w-100">Delete Offer</button>
+        </div>
+        
+        <div class="form-group mt-3">
+            <a href="{% url 'custom_admin:category_list' %}" class="btn btn-secondary btn-lg w-100">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

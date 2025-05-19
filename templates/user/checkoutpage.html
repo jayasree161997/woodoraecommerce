@@ -1,0 +1,212 @@
+{% extends "layouts/mainsecond.html" %}
+{% load static %}
+
+{% block body %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Page</title>
+    <style>
+        .checkout-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: linear-gradient(to right,rgb(230, 244, 236),rgb(156, 203, 156));
+            gap: 30px;
+        }
+
+        .box {
+            background: linear-gradient(to bottom, #fef9d7, #f582ae);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            width: 55%;
+            font-family: 'Arial', sans-serif;
+            color: #4a4a4a;
+        }
+
+        h2 {
+            text-align: center;
+            color: #6a0572;
+            font-weight: 700;
+        }
+
+        button {
+            background: linear-gradient(to right,rgb(28, 29, 28),rgb(48, 203, 17));
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .total-price, .final-price {
+            font-weight: bold;
+            color: #dd4b39;
+            font-size: 1.2em;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 5px 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .error-screen {
+            padding: 100px 20px;
+            text-align: center;
+            background-color: #fff3f3;
+        }
+
+        .error-screen h2 {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    {% if has_inactive_product %}
+    <div class="error-screen">
+        <h2>Oops! Some products in your cart are from inactive categories.</h2>
+        <p>Please remove them before proceeding to checkout.</p>
+        <a href="{% url 'cart_page' %}">
+            <button>Go to Cart</button>
+        </a>
+    </div>
+{% else %}
+    <div class="checkout-container">
+        <!-- Address Section -->
+        <div class="address-section">
+            {% if addresses %}
+                <form id="checkoutForm" method="post" action="{% url 'place_order' %}">
+                    {% csrf_token %}
+                    <h3>Select Address</h3>
+                    {% for address in addresses %}
+                        <div class="address-box">
+                            <input type="radio" name="address_id" value="{{ address.id }}" id="address_{{ address.id }}" required>
+                            <label for="address_{{ address.id }}">
+                                <strong>{{ address.first_name }} {{ address.last_name }}</strong><br>
+                                {{ address.street_address }}, {{ address.house_no }}<br>
+                                {{ address.postcode }} - {{ address.mobile }}<br>
+                            </label>
+                            <button onclick="window.location.href='{% url 'edit_address' address.id %}?next={% url 'checkoutpage' %}'" class="edit-btn">
+                                Edit
+                            </button>
+                            <button onclick="confirmDelete('{{ address.id }}')" class="delete-btn">
+                                Delete
+                            </button>
+                        </div>
+                    {% endfor %}
+                    <a href="{% url 'add_Address' %}?next={% url 'checkoutpage' %}" class="btn btn-primary">Add New Address</a>
+
+                    <h3 class="mt-4">Select Payment Option</h3>
+                    <div class="payment-option">
+                        <div>
+                            <input type="radio" name="payment_option" value="cash_on_delivery" id="cash_on_delivery" required>
+                            <label for="cash_on_delivery">Cash on Delivery</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="payment_option" value="razorpay" id="razorpay" required>
+                            <label for="razorpay">Razorpay</label>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="final_price" value="{{ final_price }}">
+                    <button type="submit" class="btn btn-success mt-3" id="placeOrderBtn">Place Order</button>
+                </form>
+            {% else %}
+                <p>You do not have any saved addresses. Please add an address to continue.</p>
+                <a class="btn btn-primary" href="{% url 'add_Address' %}">Add New Address</a>
+            {% endif %}
+        </div>
+
+        <!-- Product Summary Section -->
+        <div class="summary-section">
+            <h3>Order Summary</h3>
+            {% for cart_item in cart_items %}
+                <div>{{ cart_item.item.quantity }} x {{ cart_item.item.product.name }} - ₹{{ cart_item.item_total|floatformat:2 }}</div>
+            {% endfor %}
+            <div><strong>Number of items: {{ cart_items|length }}</strong></div>
+
+            
+            <div class="total-price">Subtotal: ₹{{ total_price|floatformat:0 }}</div>
+
+            {% if discount_amount > 0 %}
+                <div class="discount">Coupon Discount: - ₹{{ discount_amount|floatformat:0 }}</div>
+            {% endif %}
+            {% if discount_amount > 0 and coupon_code %}
+        <div class="coupon-info" style="color: green;">
+            ✅ Coupon "<strong>{{ coupon_code }}</strong>" applied!
+        </div>
+    {% endif %}
+            <p>Delivery Charge: ₹<span id="delivery-charge">{{ delivery_charge }}</span></p>
+            
+            <hr>
+
+            <div class="final-price">
+               
+               
+                <p><strong>Final Price (After Discount + Delivery): ₹<span id="final-price">{{ final_price }}</span></strong></p>
+
+
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    document.getElementById('checkoutForm')?.addEventListener('submit', function(event) {
+        const paymentOption = document.querySelector('input[name="payment_option"]:checked');
+        if (!paymentOption) {
+            alert("Please select a payment option.");
+            event.preventDefault();
+            return;
+        }
+
+        if (paymentOption.value === 'razorpay') {
+            event.preventDefault();
+            const finalPrice = "{{ final_price }}";
+            window.location.href = `/payment/initiate-payment/?amount=${finalPrice}`;
+        }
+    });
+
+    function confirmDelete(addressId) {
+        if (confirm('Are you sure you want to delete this address?')) {
+            window.location.href = "{% url 'delete_address' 0 %}".replace("0", addressId) + "?next={% url 'checkoutpage' %}";
+        }
+    }
+</script>
+</body>
+</html>
+{% endblock body %}

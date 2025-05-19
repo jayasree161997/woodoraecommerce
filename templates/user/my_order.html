@@ -1,0 +1,480 @@
+{% extends "layouts/mainsecond.html" %}
+{% block body %}
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    h1 {
+        color: #343a40;
+        font-weight: bold;
+    }
+
+    .card {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .badge.bg-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545;
+    }
+
+    .badge.bg-success {
+        background-color: #28a745;
+    }
+
+    .badge.bg-secondary {
+        background-color: #6c757d;
+    }
+
+    .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        border-radius: 0.25rem;
+        transition: 0.15s ease-in-out;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">My Orders</h1>
+
+    {% if orders %}
+        {% for order_with_products in orders %}
+        <div class="card">
+            <div class="card-header">
+                Order ID: {{ order_with_products.id }}
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for item in order_with_products.order_items.all %}
+                    <li class="list-group-item">
+                        <img src="{{ item.product.main_image.url|default:'https://via.placeholder.com/80' }}" 
+                             alt="{{ item.product.name }}" 
+                             class="img-thumbnail" 
+                             style="width: 80px; height: 80px; object-fit: cover;">
+                        <span>{{ item.name }}  ₹{{ item.price }} (Qty: {{ item.quantity }})</span>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No products found for this order.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <p>Total Amount: ₹{{ order_with_products.total_price }}</p>
+                <p>Payment Method: {{ order_with_products.payment_method }}</p>
+                <p>Payment Status: {{ order_with_products.payment_status }}</p>
+               
+{% comment %}                    
+                    {% if order_with_products.payment_method == 'COD' %}
+                    {{ order_with_products.cod_transaction_id }} 
+                    {% else %}
+                    {{ order_with_products.razorpay_payment_id }}
+                    {% endif %} {% endcomment %}
+                    <p>Transaction ID: 
+    {% if order_with_products.payment_method|lower == 'cash_on_delivery' and order_with_products.cod_transaction_id %}
+        {{ order_with_products.cod_transaction_id }}
+    {% elif order_with_products.payment_method|lower == 'razorpay' and order_with_products.razorpay_payment_id %}
+        {{ order_with_products.razorpay_payment_id }}
+    {% else %}
+        N/A
+    {% endif %}
+</p>
+
+              
+
+                <p>Order Status: 
+                    <span id="order-status-{{ order_with_products.order.id }}" 
+                          class="badge 
+                            {% if order_with_products.status == 'Pending' %}bg-warning text-dark
+                            {% elif order_with_products.status == 'Cancelled' %}bg-danger
+                            {% elif order_with_products.status == 'Delivered' %}bg-success
+                            {% else %}bg-secondary{% endif %}">
+                        {{ order_with_products.status }}
+                    </span>
+                </p>
+
+                <p class="text-right">
+                     {% if order_with_products.payment_method == "RAZORPAY" and order_with_products.payment_status == "Pending" %}
+                            <a href="{% url 'retry_payment' order_with_products.id %}" class="btn btn-warning btn-sm">
+                                Try Again
+                            </a>
+                     {% endif %}
+{% comment %}                     
+                    {% if order_with_products.order.status != "Cancelled" and order_with_products.order.status != "Delivered" and order_with_products.order.status != "Return Completed" and order_with_products.order.status != "Return Accepted" and order_with_products.order.status != "Return Rejected" %}
+                        {% if order_with_products.order.payment_method == "cash_on_delivery" %}
+                            <a href="#" class="btn btn-danger btn-sm cancel-order-btn" 
+                               data-bs-toggle="modal" 
+                               data-bs-target="#cancelOrderModal{{ order_with_products.order.id }}">
+                                Cancel Order
+                            </a>
+                       
+                        {% elif order_with_products.order.payment_status == "Success" %}
+                            <a href="#" class="btn btn-danger btn-sm cancel-order-btn" 
+                               data-bs-toggle="modal" 
+                               data-bs-target="#cancelOrderModal{{ order_with_products.order.id }}">
+                                Cancel Order
+                            </a>
+                        {% endif %}
+                    {% endif %} {% endcomment %}
+                   {% comment %} {% if order_with_products.status == "Pending" and order_with_products.payment_method != "RAZORPAY" or order_with_products.payment_status != "Pending" %} {% endcomment %}
+          {% if order_with_products.status == "Pending" and order_with_products.payment_method != "RAZORPAY" or order_with_products.payment_status != "Pending" and order_with_products.status != "Delivered" and order_with_products.status != "Return Requested" %}
+
+
+                        <a href="#" class="btn btn-danger btn-sm cancel-order-btn" 
+                               data-bs-toggle="modal" 
+                               data-bs-target="#cancelOrderModal{{ order_with_products.id }}">
+                                Cancel Order
+                            </a>
+                    {% endif %}
+                </p>  
+
+                {% if order_with_products.payment_method == "cash_on_delivery" or order_with_products.payment_status == "Success" %}
+                    <a href="{% url 'view_order_details' order_with_products.id %}" class="btn btn-info btn-sm">
+                        View
+                    </a>
+
+                    {% comment %} {% if order_with_products.order.status != "Cancelled" %} {% endcomment %}
+                    {% if order_with_products.status != "Cancelled" and order_with_products.status != "Returned" %}
+
+
+                        <a id = 'trackorder-button' href="{% url 'track_order' order_with_products.id %}" class="btn btn-primary btn-sm">
+                            Track Order
+                        </a>
+                    {% endif %}
+                    
+                    <p class="text-right">
+                        {% if order_with_products.status == "Delivered" %}
+                            <a id = "return-button-{{ order_with_products.id }}" href="#" class="btn btn-warning btn-sm return-order-btn" 
+                               data-bs-toggle="modal" 
+                               data-bs-target="#returnOrderModal{{ order_with_products.id }}">
+                                Return Order
+                            </a>
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Return Order Modal -->
+        <div class="modal fade" id="returnOrderModal{{ order_with_products.id }}" tabindex="-1" aria-labelledby="returnOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="returnOrderModalLabel">Return Order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="return-order-form" data-order-id="{{ order_with_products.id }}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="returnReason{{ order_with_products.id }}" class="form-label">Reason for Return</label>
+                                <select class="form-select return-reason" id="returnReason{{ order_with_products.id }}" name="return_reason" required>
+                                    <option value="">Select a reason</option>
+                                    <option value="Wrong item received">Wrong item received</option>
+                                    <option value="Damaged product">Damaged product</option>
+                                    <option value="Quality issue">Quality issue</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger confirm-return-btn">Confirm Return</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancel Order Modal -->
+        <div class="modal fade" id="cancelOrderModal{{ order_with_products.id }}" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="cancel-order-form" data-order-id="{{ order_with_products.id }}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="cancelReason{{ order_with_products.id }}" class="form-label">Reason for cancellation</label>
+                                <select class="form-select cancel-reason" id="cancelReason{{ order_with_products.id }}" name="cancel_reason" required>
+                                    <option value="">Select a reason</option>
+                                    <option value="Changed mind">Changed mind</option>
+                                    <option value="Found a better price">Found a better price</option>
+                                    <option value="Order delay">Order delay</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger confirm-cancel-btn">Confirm Cancellation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            You have no orders.
+        </div>
+    {% endif %}
+</div>
+
+
+
+<!-- JavaScript to Handle Cancellation Without Page Refresh -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".cancel-order-form").forEach(form => {
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+    
+                let orderId = this.getAttribute("data-order-id");
+                let reason = this.querySelector(".cancel-reason").value;
+                let csrfToken = this.querySelector("[name=csrfmiddlewaretoken]").value;
+    
+                if (!reason) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Oops...",
+                        text: "Please select a reason for cancellation!",
+                    });
+                    return;
+                }
+    
+                fetch(`/cancel_order/${orderId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ cancel_reason: reason })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update order status and badge
+                        const orderStatusElement = document.getElementById(`order-status-${orderId}`);
+                        if (orderStatusElement) {
+                            orderStatusElement.innerText = "Cancelled";
+                            orderStatusElement.className = "badge bg-danger";
+                            //window.location.reload();
+                        }
+    
+                        // Remove the "Cancel Order" button
+                        const cancelButton = document.querySelector(`[data-bs-target="#cancelOrderModal${orderId}"]`);
+                        if (cancelButton) {
+                            cancelButton.remove();
+                        }
+                        
+
+                        const trackButton = document.querySelector(`#track-order-${orderId}`);
+                        if (trackButton) {
+                            trackButton.style.display = "none";
+                        }
+
+
+                      
+    
+                        // Hide and reset the modal
+                        const cancelModal = document.querySelector(`#cancelOrderModal${orderId}`);
+                        const bootstrapModal = bootstrap.Modal.getInstance(cancelModal);
+                        if (bootstrapModal) {
+                            bootstrapModal.hide();
+                        }
+                        cancelModal.addEventListener('hidden.bs.modal', function () {
+                            cancelModal.style.display = "none";
+                        });
+
+                        
+    
+                        // Show SweetAlert success message
+                        Swal.fire({
+                            icon: "success",
+                            title: "Order Cancelled",
+                            text: "Your order has been cancelled successfully.",
+                            confirmButtonColor: "#d33"
+                            
+                        });
+                        //window.location.reload();
+                        document.getElementById("trackorder-button").remove();
+    
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: data.error || "Something went wrong. Please try again.",
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Something went wrong. Please try again.",
+                    });
+                    console.error(error);
+                });
+            });
+        });
+    });
+    
+
+
+ document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".return-order-form").forEach(form => {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const orderId = this.getAttribute("data-order-id");
+            const reason = this.querySelector(".return-reason").value;
+            const csrfToken = this.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            if (!reason) {
+                alert("Please select a reason for return.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/return_order/${orderId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ return_reason: reason })
+                });
+
+                const data = await response.json();
+                console.log(data)
+
+                if (data.success) {
+                    console.log('return-success');
+                    document.getElementById(`return-button-${orderId}`).remove();
+
+                    // Update order status
+                   const orderStatusElement = document.getElementById(`order-status-${orderId}`);
+if (orderStatusElement) {
+    orderStatusElement.innerText = "Return Requested";
+    orderStatusElement.className = "badge bg-warning text-dark";
+} else {
+    console.warn(`Order status element not found for order ID: ${orderId}`);
+}
+
+
+                    // Hide and reset the modal
+                    const returnModal = document.querySelector(`#returnOrderModal${orderId}`);
+                    const bootstrapModal = bootstrap.Modal.getInstance(returnModal);
+                    if (bootstrapModal) {
+                        bootstrapModal.hide();
+                    }
+                } else {
+                    alert("Error: " + data.error);
+                }
+
+                window.location.reload();
+
+            } catch (error) {
+                alert("Something went wrong. Please try again.");
+                console.error(error);
+            }
+        });
+    });
+});
+    
+    
+
+    {% comment %} fetch(`/return_order/${orderId}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ return_reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Return request completed. Amount credited to your wallet.");
+    
+            // Update order status in UI
+            const orderStatusElement = document.getElementById(`order-status-${orderId}`);
+            if (orderStatusElement) {
+                orderStatusElement.innerText = "Returned";
+                orderStatusElement.className = "badge bg-success text-light";
+            }
+    
+            // Update wallet balance in UI (if applicable)
+            const walletBalanceElement = document.getElementById("wallet-balance");
+            if (walletBalanceElement) {
+                let currentBalance = parseFloat(walletBalanceElement.innerText) || 0;
+                walletBalanceElement.innerText = (currentBalance + parseFloat(data.refund_amount)).toFixed(2);
+            }
+    
+            // Hide the modal
+            const returnModal = document.querySelector(`#returnOrderModal${orderId}`);
+            if (returnModal) {
+                const bootstrapModal = bootstrap.Modal.getInstance(returnModal);
+                if (bootstrapModal) {
+                    bootstrapModal.hide();
+                }
+            }
+        } else {
+            alert("Error: " + data.error);
+        }
+    })
+    .catch(error => {
+        alert("Something went wrong. Please try again.");
+    });
+     {% endcomment %}
+</script> 
+
+{% endblock %}

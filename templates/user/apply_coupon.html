@@ -1,0 +1,9 @@
+{% comment %} <form method="post">
+    {{ form.as_p }}
+    <button type="submit">Apply Coupon</button>
+</form> {% endcomment %}
+<form method="POST">
+    {% csrf_token %}
+    {{ coupon_form.as_p }}
+    <button type="submit">Apply Coupon</button>
+</form>

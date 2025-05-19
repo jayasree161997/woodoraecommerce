@@ -1,0 +1,35 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Container for the page content -->
+<div class="container mt-5">
+    <!-- Page Title -->
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">💸 Apply Coupon</h1>
+        <p class="lead text-muted">Enter your coupon code below to apply the discount to your order.</p>
+    </div>
+
+    <!-- Coupon Application Card -->
+    <div class="card shadow-lg p-4">
+        <div class="card-header bg-info text-white">
+            <h4><strong>Coupon Code</strong></h4>
+        </div>
+        <div class="card-body">
+            <!-- Coupon Form Start -->
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Form Fields Styled -->
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                
+                <!-- Apply Coupon Button -->
+                <button type="submit" class="btn btn-primary btn-lg w-100">Apply Coupon</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

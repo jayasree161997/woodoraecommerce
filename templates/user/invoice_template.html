@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice_data.order_id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
+        .invoice-box { border: 1px solid #ccc; padding: 20px; width: 100%; max-width: 600px; margin: auto; }
+        h2 { text-align: center; }
+        .details { margin-bottom: 20px; }
+        .items-table { width: 100%; border-collapse: collapse; }
+        .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .total { font-size: 1.2em; font-weight: bold; text-align: right; }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="header">
+            {% comment %} <img src="path/to/your-logo.png" alt="Company Logo"> <!-- Add your logo --> {% endcomment %}
+            <p><strong>WOODORA</strong></p>
+            {% comment %} <p>Style </p> {% endcomment %}
+            <p>Contact: support@woodora.com | +91 9809700000</p>
+        </div>
+        <h2>Invoice #{{ invoice_data.order_id }}</h2>
+        <p><strong>Date:</strong> {{ invoice_data.delivery_date|date:"d M Y, h:i A" }}</p>
+        <p><strong>Customer:</strong> {{ invoice_data.customer_name }}</p>
+        <p><strong>Payment Method:</strong> {{ invoice_data.payment_method }}</p>
+        {% comment %} <p><strong>Shipping Address:</strong> {{ invoice_data.shipping_address }}</p> {% endcomment %}
+        <h3>Shipping Address:</h3>
+        {% if invoice_data.shipping_address == "Address not available" %}
+            <p>Address not available.</p>
+        {% else %}
+            <p>{{ invoice_data.shipping_address }}</p>
+        {% endif %}
+        
+        <h3>Items Ordered:</h3>
+        <table class="items-table">
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+            {% for item in invoice_data.order_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.product.price }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% if invoice_data.coupon and invoice_data.discount_amount > 0 %}
+    <p><strong>Coupon Used:</strong> {{ invoice_data.coupon.code }}</p>
+    <p><strong>Discount Applied:</strong> ₹{{ invoice_data.discount_amount }}</p>
+{% endif %}
+
+        <p class="total">Total: ₹{{ invoice_data.total_price }}</p>
+    </div>
+</body>
+</html>

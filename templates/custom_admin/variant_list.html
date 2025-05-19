@@ -1,0 +1,42 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Variants</title>
+</head>
+<body>
+    <h1>Product Variants</h1>
+    <a href="{% url 'custom_admin:add_variant' %}" class="btn btn-primary">Add Variant</a> 
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Variant Name</th>
+                <th>Variant Value</th>
+                <th>Color Image</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for variant in variants %}
+            <tr>
+                <td>{{ variant.product.name }}</td>
+                <td>{{ variant.variant_name }}</td>
+                <td>{{ variant.variant_value }}</td>
+                <td>
+                    {% if variant.color_image %}
+                    <img src="{{ variant.color_image.url }}" alt="{{ variant.variant_value }}" style="width: 50px; height: auto;">
+                    {% else %}
+                    No Image
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+{% endblock %}

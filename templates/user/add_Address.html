@@ -1,0 +1,106 @@
+{% extends "layouts/mainsecond.html" %}
+
+{% load static %}
+
+{% block body %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+  </head>
+  <body>
+<style>
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+    
+        .container2 {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    
+        h2 {
+            color:rgb(73, 129, 72);
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+    
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+    
+        form p {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+    
+        form input[type="text"], 
+        form input[type="email"], 
+        form input[type="password"], 
+        form textarea, 
+        form select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Ensures padding doesn’t increase width */
+        }
+    
+        .btn {
+            background: linear-gradient(45deg,rgb(91, 154, 92),rgb(152, 164, 151));
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+    
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    
+        .btn:nth-child(2) {
+            background: linear-gradient(45deg,rgb(160, 176, 158),rgb(158, 163, 155));
+        }
+    
+        .btn:nth-child(2):hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    
+</style>
+ <div class="container2">
+    <h2>Add Address</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn">Save Address</button>
+        <button type="submit" class="btn">Cancel </button>
+    </form>
+</div> 
+</body>
+</html>
+
+{% endblock body %}

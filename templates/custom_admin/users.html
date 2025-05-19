@@ -1,0 +1,73 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="mb-4">User Management</h1>
+    
+        <!-- Display success or error messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="GET" action="{% url 'custom_admin:users' %}" class="mb-4">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    name="search" 
+                    class="form-control" 
+                    placeholder="Search by username or email" 
+                    value="{{ search_query }}"
+                >
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+    
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Mobile Number</th> 
+                    <th>Status</th>
+                    <th>Action</th>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.profile.mobile_number %}
+                                {{ user.profile.mobile_number }}
+                            {% else %}
+                                <span class="text-muted">Not Provided</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Blocked</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'custom_admin:block_unblock_user' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                {% if user.is_active %}
+                                    <button type="submit" name="action" value="block" class="btn btn-danger btn-sm">Block</button>
+                                {% else %}
+                                    <button type="submit" name="action" value="activate" class="btn btn-success btn-sm">Activate</button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

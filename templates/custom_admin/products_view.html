@@ -1,0 +1,219 @@
+{% extends 'custom_admin/index.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+.table-responsive {
+    overflow-x: auto; 
+    max-width: 100%; 
+}
+
+.product-table {
+    font-size: 12px; 
+    width: 100%; 
+    table-layout: auto; 
+    border-collapse: collapse;
+}
+
+.product-table th, 
+.product-table td {
+    padding: 6px 8px; 
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+/* Adjust column widths */
+.product-table th, .product-table td {
+    min-width: 100px;
+}
+
+/* Reduce button sizes */
+.btn-sm {
+    padding: 3px 6px;
+    font-size: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .product-table th, .product-table td {
+        font-size: 10px;
+        padding: 4px 6px;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-table th:nth-child(3), 
+    .product-table td:nth-child(3),
+    .product-table th:nth-child(10), 
+    .product-table td:nth-child(10) {
+        display: none;
+    }
+}
+.pagination {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 0;
+}
+
+.pagination .page-item {
+    margin: 5px;
+    padding: 8px 12px;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.pagination .page-item:hover {
+    background: #0056b3;
+}
+
+.pagination .active {
+    background: #28a745;
+    font-weight: bold;
+}
+
+</style>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Search Form -->
+<form method="GET" action="{% url 'custom_admin:products_view' %}" class="form-inline mb-3">
+    <input type="text" name="query" class="form-control mr-sm-2" placeholder="Search products..." value="{{ request.GET.query }}">
+    <button type="submit" class="btn btn-outline-success">Search</button>
+</form>
+
+<a href="{% url 'custom_admin:add_products' %}" class="btn btn-primary mb-3">Add Product</a>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover product-table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Image</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Price</th>
+                <th scope="col">Original Price</th>
+                <th scope="col">Discount Percentage</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Stock Status</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Material</th>
+                <th scope="col">Dimensions</th>
+                <th scope="col">Weight (kg)</th>
+                <th scope="col">Warranty</th>
+                <th scope="col">Category</th>
+                <th scope="col">Offer Status</th>
+                <th scope="col">Actions</th>
+                <th scope="col">Offer Action</th>
+            </tr>
+        </thead>
+        <tbody id="productTableBody">
+            {% for product in products %}
+            <tr>
+                <td>
+                    {% if product.main_image and product.main_image.url %}
+                        <img src="{{ product.main_image.url }}" alt="Product Image" class="img-thumbnail" style="width: 50px; height: 50px;">
+                    {% else %}
+                        <img src="{% static 'images/arm chairs/1.jpg' %}" alt="Default Product Image" class="img-thumbnail" style="width: 50px; height: 50px;">
+                    {% endif %}
+                </td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.brand }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.original_price }}</td>
+                <td>{{ product.discount_percentage }}%</td>
+                <td>{{ product.quantity }}</td>
+                <td>{% if product.stock_status %} In Stock {% else %} Out of Stock {% endif %}</td>
+                <td>{{ product.stock }}</td>
+                <td>{{ product.material }}</td>
+                <td>{{ product.dimensions }}</td>
+                <td>{{ product.weight }}</td>
+                <td>{{ product.warranty }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>
+                    {% if product.productoffer_set.exists %}
+                        Offer Applied
+                    {% else %}
+                        No Offer
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'custom_admin:edit_products' product.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'custom_admin:delete_products' product.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+                <td>
+                    <a href="{% url 'custom_admin:add_offer' product.id %}" class="btn btn-success btn-sm">Add Offer</a>
+                    {% if product.productoffer_set.exists %}
+                        <a href="{% url 'custom_admin:edit_offer' product.productoffer_set.first.id %}" class="btn btn-warning btn-sm">Edit Offer</a>
+                        {% comment %} <a href="{% url 'custom_admin:remove_offer' product.productoffer_set.first.id %}" class="btn btn-secondary btn-sm">Remove Offer</a> {% endcomment %}
+                        <a href="{% url 'custom_admin:remove_offer' product.id %}" class="btn btn-secondary btn-sm">Remove Offer</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination Controls -->
+<ul id="pagination" class="pagination justify-content-center"></ul>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rowsPerPage = 6;
+        const tableBody = document.getElementById("productTableBody");
+        const pagination = document.getElementById("pagination");
+        let rows = Array.from(tableBody.querySelectorAll("tr"));
+        let currentPage = 1;
+
+        function displayTable(page) {
+            tableBody.innerHTML = "";
+            let start = (page - 1) * rowsPerPage;
+            let end = start + rowsPerPage;
+            let paginatedRows = rows.slice(start, end);
+
+            paginatedRows.forEach(row => tableBody.appendChild(row));
+            updatePaginationButtons();
+        }
+
+        function updatePaginationButtons() {
+            pagination.innerHTML = "";
+            let totalPages = Math.ceil(rows.length / rowsPerPage);
+
+            for (let i = 1; i <= totalPages; i++) {
+                let btn = document.createElement("li");
+                btn.innerText = i;
+                btn.classList.add("page-item", "page-link");
+                if (i === currentPage) btn.classList.add("active");
+                btn.addEventListener("click", function () {
+                    currentPage = i;
+                    displayTable(currentPage);
+                });
+                pagination.appendChild(btn);
+            }
+        }
+
+        if (rows.length > rowsPerPage) {
+            displayTable(currentPage);
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+<h3>Enter the OTP sent to your email</h3>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="otp" maxlength="6" required placeholder="Enter OTP">
+    <button type="submit" class="btn btn-primary">Verify OTP</button>
+</form>
+
+<div id="timer">OTP expires in <span id="time">60</span> seconds</div>
+
+<script>
+let timeLeft = 60;
+const timerDisplay = document.getElementById('time');
+const timer = setInterval(() => {
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        timerDisplay.innerText = "Expired";
+    } else {
+        timeLeft--;
+        timerDisplay.innerText = timeLeft;
+    }
+}, 1000);
+</script>

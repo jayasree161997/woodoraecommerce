@@ -46,6 +46,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from django.utils.timezone import make_aware
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from django.views.decorators.cache import never_cache
 
 User = get_user_model()
 
@@ -68,7 +69,7 @@ def superuser_required(view_func):
 
 # Create your views here 
 
-
+@never_cache
 def signin(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -110,13 +111,20 @@ def products_view(request):
     query = request.GET.get('query', '')
     
     if query:
-        products = Product.objects.filter(name__icontains=query)
+        # products = Product.objects.filter(name__icontains=query)
+        products = Product.objects.filter(name__icontains=query, is_deleted=False, is_active=True).order_by('-created_at')
+
     else:
-        products = Product.objects.all()
+        # products = Product.objects.all()
+        products = Product.objects.filter(is_deleted=False, is_active=True).order_by('-created_at')
+
+    inactive_products = Product.objects.filter(is_active=False).order_by('-created_at')
     
     context = {
         'products': products,
         'query': query,
+        'inactive_products': inactive_products,
+
     }
     return render(request, 'custom_admin/products_view.html', context)
 
@@ -126,12 +134,15 @@ def products_view(request):
 @login_required
 def products_details(request, product_id):
     try:
-        product = Product.objects.get(id=product_id)
+        product = Product.objects.get(id=product_id, is_deleted=False)
     except Product.DoesNotExist:
         return render(request, 'user/404.html', status=404)  
     return render(request, 'user/products_details.html', {'product': product})
 
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required
 def index(request):
     return render(request,'custom_admin/index.html') 
 
@@ -144,6 +155,16 @@ def superuser_required(view_func):
         login_url='custom_admin:signin'  
     )(view_func)
     return decorated_view_func
+
+
+
+# @login_required
+# def toggle_product_status(request, product_id):
+#     product = get_object_or_404(Product, id=product_id)
+#     product.is_active = not product.is_active
+#     product.save()
+#     return redirect('custom_admin:products_view')  
+
 
 
 @superuser_required
@@ -255,12 +276,52 @@ def edit_product(request, product_id):
 
 @superuser_required
 @login_required
+
+# def delete_product(request, product_id):
+#     try:
+#         product = Product.objects.get(id=product_id)
+#     except Product.DoesNotExist:
+#         messages.error(request, "Product not found.")
+#         return redirect('custom_admin:products_view')  # Redirect to list page
+
+#     if request.method == 'POST':
+#         product.delete()
+#         messages.success(request, "Product deleted successfully.")
+#         return redirect('custom_admin:products_view')  # Redirect after delete
+
+#     return render(request, 'custom_admin/delete_product.html', {'product': product})
 def delete_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        messages.error(request, "Product not found.")
+        return redirect('custom_admin:products_view')
+
     if request.method == 'POST':
-        product.delete()
-        return redirect('custom_admin:products_details', product_id=product.id)
+        product.is_active = False
+        product.is_deleted = True
+        product.save()
+        messages.success(request, "Product soft-deleted successfully.")
+        return redirect('custom_admin:products_view')
+
     return render(request, 'custom_admin/delete_product.html', {'product': product})
+
+
+
+def restore_product(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id, is_active=False)
+        product.is_active = True
+        product.is_deleted = False
+        product.save()
+        messages.success(request, "Product restored successfully!")
+        print(f"Restored Product: {product.id}, is_active: {product.is_active}")
+    else:
+        messages.error(request, "Invalid request method.")
+    return redirect('custom_admin:products_view')
+
+
+@superuser_required
 
 
 @superuser_required
@@ -308,8 +369,8 @@ def add_category(request):
     return render(request, 'custom_admin/add_category.html', {'form': form})
 
 
-from django.http import JsonResponse
 
+@login_required
 def check_category_duplicate(request):
     category_name = request.GET.get('name', '').strip()
     exists = Category.objects.filter(name__iexact=category_name).exists()
@@ -318,21 +379,29 @@ def check_category_duplicate(request):
 
 
 
-
-
+@login_required
 def edit_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
+    
     if request.method == 'POST':
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
+            new_name = form.cleaned_data['name'].strip()
+
+            # Check for duplicates (excluding the current category)
+            if Category.objects.filter(name__iexact=new_name).exclude(id=category_id).exists():
+                messages.error(request, "Category with this name already exists (case-insensitive check).")
+                return redirect('custom_admin:edit_category', category_id=category_id)
+
             form.save()
             messages.success(request, "Category updated successfully!")
             return redirect('custom_admin:category_list')
     else:
         form = CategoryForm(instance=category)
+    
     return render(request, 'custom_admin/edit_category.html', {'form': form})
 
-
+@login_required
 def delete_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     if request.method == 'POST':
@@ -385,7 +454,7 @@ def order_management(request):
 
 
 
-
+@login_required
 def view_order_details(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     
@@ -463,7 +532,7 @@ def change_order_status(request, order_id, status):
 
 
 
-
+@login_required
 def add_offer(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
@@ -483,7 +552,7 @@ def add_offer(request, product_id):
     return render(request, 'custom_admin/add_offer.html', {'form': form, 'product': product})
 
 
-
+@login_required
 def edit_offer(request, offer_id):
     offer = get_object_or_404(ProductOffer, id=offer_id)
     if request.method == 'POST':
@@ -503,7 +572,7 @@ def edit_offer(request, offer_id):
 
 
 
-
+@login_required
 def remove_offer(request, product_id):
     offers = ProductOffer.objects.filter(product_id=product_id)
     
@@ -518,7 +587,7 @@ def remove_offer(request, product_id):
     messages.info(request, f'All offers removed from {product_name}.')
     return redirect('custom_admin:products_view')
 
-
+@login_required
 def add_category_offer(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     if request.method == 'POST':
@@ -534,7 +603,7 @@ def add_category_offer(request, category_id):
     return render(request, 'custom_admin/add_category_offer.html', {'form': form, 'category': category})
 
 
-
+@login_required
 def edit_category_offer(request, offer_id):
     offer = get_object_or_404(CategoryOffer, id=offer_id)
     
@@ -552,7 +621,7 @@ def edit_category_offer(request, offer_id):
 
 
 
-
+@login_required
 def delete_category_offer(request, offer_id):
     offer = get_object_or_404(CategoryOffer, id=offer_id)
     
@@ -564,10 +633,12 @@ def delete_category_offer(request, offer_id):
     return render(request, 'custom_admin/delete_category_offer.html', {'offer': offer})
 
 
+@login_required
 def coupon_management(request):
     coupons = Coupon.objects.all() 
     return render(request, 'custom_admin/coupon_management.html', {'coupons': coupons})
 
+@login_required
 def apply_coupon(request):
     now = timezone.now()
     form = CouponForm(request.POST or None)
@@ -730,7 +801,7 @@ def generate_excel(context):
 
 
 
-
+@login_required
 def sales_report_view(request):
     today = datetime.today().date()
     start_date = request.GET.get('start_date')
@@ -831,7 +902,7 @@ def download_report(request, report_type, context):
 
 
 
-
+@login_required
 def get_sales_data(request):
     filter_option = request.GET.get('filter_option', 'yearly')
     start_date_str = request.GET.get('start_date')
@@ -887,7 +958,7 @@ def get_sales_data(request):
 
 
 
-
+@login_required
 def generate_ledger_book(request):
     
     response = HttpResponse(content_type='application/pdf')
@@ -904,7 +975,7 @@ def generate_ledger_book(request):
 
 
 
-
+@login_required
 def dashboard(request):
     filter_type = request.GET.get('filter', 'yearly')
 

@@ -48,6 +48,11 @@ urlpatterns = [
     path('order/<int:order_id>/status/<str:status>/', views.change_order_status, name='change_order_status'),
     path('restore-category/<int:category_id>/', views.restore_category, name='restore_category'),
     path('ajax/check-category/', views.check_category_duplicate, name='check_category_duplicate'),
+    # path('toggle-product-status/<int:product_id>/', views.toggle_product_status, name='toggle_product_status'),
+    # path('products/deleted/', views.deleted_products, name='deleted_products'),
+    # path('products/recover/<int:product_id>/', views.recover_product, name='recover_product'),
+    path('restore-products/<int:product_id>/', views.restore_product, name='restore_product'),
+
 
     
     

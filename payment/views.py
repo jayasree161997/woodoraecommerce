@@ -2,7 +2,7 @@ import logging
 import razorpay 
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from products.models import Order,OrderItem,Cart,CartItem
+from products.models import Order,OrderItem,Cart,CartItem, Coupon
 from home.models import Address
 from django.contrib import messages
 import paypalrestsdk
@@ -65,6 +65,18 @@ def initiate_payment(request):
             )
 
             discount_amount = Decimal(str(cart.discount_amount or "0.00"))
+
+            coupon_instance = None
+            print('is coupoun applied', cart.coupon_applied)
+            if cart.coupon_applied:
+               
+                try:
+                    coupon_instance = Coupon.objects.get(code=cart.coupon_code)
+                    logger.info(f"Coupon Retrieved: {coupon_instance} | Code: {coupon_instance.code}")
+                except Coupon.DoesNotExist:
+                    logger.warning("Coupon does not exist!")
+                    coupon_instance = None
+            
             delivery_charge = Decimal("60.00")
 
             # final price is not negative
@@ -87,6 +99,8 @@ def initiate_payment(request):
             if not user_address:
                 messages.error(request, "No address found for the user.")
                 return redirect('cart_detail')
+            
+            
 
             # ✅ Create Order 
             django_order = Order.objects.create(
@@ -100,15 +114,22 @@ def initiate_payment(request):
                 street_address=user_address.street_address,
                 total_price=final_price,
                 payment_method='RAZORPAY',
+                
                 razorpay_order_id=razorpay_order["id"],
                 payment_status='Pending',
                 status='Pending',
 
-                discount_amount=discount_amount,
-                coupon_code=cart.coupon_code if cart.coupon_applied else None 
+                coupon=coupon_instance,
+              
+                # coupon_code=cart.coupon_code if cart.coupon_applied else None 
+                coupon_code=coupon_instance.code if coupon_instance else None,
+                discount_amount=discount_amount,     
+                
                 
 
             )
+             
+            
 
             # request.session.pop('coupon_id', None)
             # request.session.pop('applied_coupon', None)
@@ -124,7 +145,8 @@ def initiate_payment(request):
                     price=cart_item.price
                 )
 
-
+            request.session.pop('coupon_id', None)
+            request.session.pop('applied_coupon', None)
  
             context = {
                 "amount": amount_in_paise,
@@ -133,6 +155,7 @@ def initiate_payment(request):
                 "callback_url": request.build_absolute_uri('/payment/payment-status/'),
             }
             return render(request, "user/payment.html", context)
+        
 
         except InvalidOperation:
             return JsonResponse({"error": "Invalid decimal operation. Please check the price values."}, status=400)

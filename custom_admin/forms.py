@@ -20,9 +20,9 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            'name', 'description', 'brand', 'price', 'quantity', 'stock','original_price',
-            'discount_percentage', 'stock_status', 'sold', 'main_image', 
-            'material', 'dimensions', 'weight', 'warranty','category',
+            'name', 'description', 'brand', 'price', 'stock',
+              'sold', 'main_image', 
+            'material', 'dimensions', 'weight', 'warranty','category','is_active',
         ]
         # ,ProductThumbnail
         widgets = {
@@ -35,6 +35,7 @@ class ProductForm(forms.ModelForm):
             'name': 'Product Name',
             'description': 'Product Description',
             'main_image': 'Main Product Image',
+            'is_active': 'Product Status (Active/Inactive)'
         }
 
             

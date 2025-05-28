@@ -122,7 +122,7 @@
               
 
                 <p>Order Status: 
-                    <span id="order-status-{{ order_with_products.order.id }}" 
+                    <span id="order-status-{{ order_with_products.id }}" 
                           class="badge 
                             {% if order_with_products.status == 'Pending' %}bg-warning text-dark
                             {% elif order_with_products.status == 'Cancelled' %}bg-danger
@@ -156,7 +156,7 @@
                         {% endif %}
                     {% endif %} {% endcomment %}
                    {% comment %} {% if order_with_products.status == "Pending" and order_with_products.payment_method != "RAZORPAY" or order_with_products.payment_status != "Pending" %} {% endcomment %}
-          {% if order_with_products.status == "Pending" and order_with_products.payment_method != "RAZORPAY" or order_with_products.payment_status != "Pending" and order_with_products.status != "Delivered" and order_with_products.status != "Return Requested" %}
+          {% if order_with_products.status == "Pending" and order_with_products.payment_method != "RAZORPAY" or order_with_products.payment_status != "Pending" and order_with_products.status != "Delivered" and order_with_products.status != "Return Requested" and order_with_products.status != "Cancelled" %}
 
 
                         <a href="#" class="btn btn-danger btn-sm cancel-order-btn" 
@@ -300,6 +300,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('data', data)
                     if (data.success) {
                         // Update order status and badge
                         const orderStatusElement = document.getElementById(`order-status-${orderId}`);

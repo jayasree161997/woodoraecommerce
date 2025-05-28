@@ -108,10 +108,10 @@
                 <th scope="col">Description</th>
                 <th scope="col">Brand</th>
                 <th scope="col">Price</th>
-                <th scope="col">Original Price</th>
-                <th scope="col">Discount Percentage</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Stock Status</th>
+                {% comment %} <th scope="col">Original Price</th> {% endcomment %}
+                {% comment %} <th scope="col">Discount Percentage</th> {% endcomment %}
+                {% comment %} <th scope="col">Quantity</th> {% endcomment %}
+                {% comment %} <th scope="col">Stock Status</th> {% endcomment %}
                 <th scope="col">Stock</th>
                 <th scope="col">Material</th>
                 <th scope="col">Dimensions</th>
@@ -119,7 +119,9 @@
                 <th scope="col">Warranty</th>
                 <th scope="col">Category</th>
                 <th scope="col">Offer Status</th>
-                <th scope="col">Actions</th>
+                 <th scope="col">Status</th>
+                {% comment %} <th scope="col">Toggle Status</th>
+                <th scope="col">Actions</th> {% endcomment %}
                 <th scope="col">Offer Action</th>
             </tr>
         </thead>
@@ -137,10 +139,10 @@
                 <td>{{ product.description }}</td>
                 <td>{{ product.brand }}</td>
                 <td>{{ product.price }}</td>
-                <td>{{ product.original_price }}</td>
-                <td>{{ product.discount_percentage }}%</td>
-                <td>{{ product.quantity }}</td>
-                <td>{% if product.stock_status %} In Stock {% else %} Out of Stock {% endif %}</td>
+                {% comment %} <td>{{ product.original_price }}</td> {% endcomment %}
+                {% comment %} <td>{{ product.discount_percentage }}%</td> {% endcomment %}
+                {% comment %} <td>{{ product.quantity }}</td> {% endcomment %}
+                {% comment %} <td>{% if product.stock_status %} In Stock {% else %} Out of Stock {% endif %}</td> {% endcomment %}
                 <td>{{ product.stock }}</td>
                 <td>{{ product.material }}</td>
                 <td>{{ product.dimensions }}</td>
@@ -154,6 +156,20 @@
                         No Offer
                     {% endif %}
                 </td>
+                {% comment %} <td>
+                    {% if product.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                </td>
+                 <td>
+                    {% if product.is_active %}
+                        <a href="{% url 'custom_admin:toggle_product_status' product.id %}" class="btn btn-sm btn-outline-danger">Deactivate</a>
+                    {% else %}
+                        <a href="{% url 'custom_admin:toggle_product_status' product.id %}" class="btn btn-sm btn-outline-success">Activate</a>
+                    {% endif %}
+                </td> {% endcomment %}
                 <td>
                     <a href="{% url 'custom_admin:edit_products' product.id %}" class="btn btn-warning btn-sm">Edit</a>
                     <a href="{% url 'custom_admin:delete_products' product.id %}" class="btn btn-danger btn-sm">Delete</a>
@@ -169,8 +185,11 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table
+
+    
 </div>
+
 
 <!-- Pagination Controls -->
 <ul id="pagination" class="pagination justify-content-center"></ul>
@@ -203,7 +222,7 @@
                 btn.classList.add("page-item", "page-link");
                 if (i === currentPage) btn.classList.add("active");
                 btn.addEventListener("click", function () {
-                    currentPage = i;
+                      currentPage = i;
                     displayTable(currentPage);
                 });
                 pagination.appendChild(btn);
@@ -215,5 +234,40 @@
         }
     });
 </script>
+
+
+  <!-- Inactive products Table -->
+    <hr>
+    <h2 class="text-warning mb-3">Deleted products</h2>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Restore</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in inactive_products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>
+                    {% comment %} <form method="post" action="{% url 'custom_admin:restore_product' product.id. %}"> {% endcomment %}
+                    <form method="post" action="{% url 'custom_admin:restore_product' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm">Restore</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center">No deleted categories.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 
 {% endblock %}

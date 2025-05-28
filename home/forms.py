@@ -27,6 +27,13 @@ class AddressForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'postcode', 'mobile', 'house_no', 'street_address']
 
 
+    def clean_postcode(self):
+        postcode = self.cleaned_data.get('postcode')
+        if not postcode.isdigit():
+            raise forms.ValidationError("Postcode must contain only numbers.")
+        return postcode
+
+
     def clean_mobile_number(self):
         mobile = self.cleaned_data.get('mobile_number')
         if not re.fullmatch(r'\d{10}', mobile):

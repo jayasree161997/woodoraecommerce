@@ -31,7 +31,19 @@
             <p>Contact: support@woodora.com | +91 9809700000</p>
         </div>
         <h2>Invoice #{{ invoice_data.order_id }}</h2>
-        <p><strong>Date:</strong> {{ invoice_data.delivery_date|date:"d M Y, h:i A" }}</p>
+       <p><strong>Order Date:</strong> {{ invoice_data.created_at|date:"d M Y, h:i A" }}</p>
+       <p><strong>Delivery Date:</strong> {{ invoice_data.delivery_date|date:"d M Y, h:i A" }}</p>
+
+
+
+       
+        {% comment %} <p><strong>Delivery Date:</strong> 
+  {% if invoice_data.delivery_date %}
+    {{ invoice_data.delivery_date|date:"d M Y, h:i A" }}
+  {% else %}
+    Not Delivered Yet
+  {% endif %}
+</p> {% endcomment %}
         <p><strong>Customer:</strong> {{ invoice_data.customer_name }}</p>
         <p><strong>Payment Method:</strong> {{ invoice_data.payment_method }}</p>
         {% comment %} <p><strong>Shipping Address:</strong> {{ invoice_data.shipping_address }}</p> {% endcomment %}
@@ -48,15 +60,19 @@
                 <th>Product Name</th>
                 <th>Quantity</th>
                 <th>Price</th>
+                <th>Subtotal</th>
             </tr>
             {% for item in invoice_data.order_items %}
             <tr>
                 <td>{{ item.product.name }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>₹{{ item.product.price }}</td>
+                <td>₹{{ item.subtotal }}</td>
+                
             </tr>
             {% endfor %}
         </table>
+        <p><strong>Subtotal (Before Discount):</strong> ₹{{ invoice_data.grand_subtotal }}</p>
         {% if invoice_data.coupon and invoice_data.discount_amount > 0 %}
     <p><strong>Coupon Used:</strong> {{ invoice_data.coupon.code }}</p>
     <p><strong>Discount Applied:</strong> ₹{{ invoice_data.discount_amount }}</p>

@@ -57,6 +57,7 @@
                     {% endif %}
                 </p>
                 <p>Order Status: 
+                    
     <span id="order-status-{{ order.id }}" 
           class="badge 
             {% if order.status == 'Pending' %}bg-warning text-dark
@@ -86,15 +87,6 @@
                 
                 <p>Total Amount: ₹{{ order.total_price }}</p>
                     <h3>Shipping Address</h3>
-                    {% comment %} {% if order.address %}
-                     <p><strong>First Name:</strong> {{ order.address.first_name }}</p>
-    <p><strong>Last Name:</strong> {{ order.address.last_name }}</p>
-    <p><strong>Mobile:</strong> {{ order.address.mobile }}</p>
-    <p><strong>Street Address:</strong> {{ order.address.street_address }}</p>
-    <p><strong>House No:</strong> {{ order.address.house_no }}</p>
-    <p><strong>Postcode:</strong> {{ order.address.postcode }}</p>
-                    {% else %}
-                    <p>No shipping address available.</p> {% endcomment %}
                     {% if order.address %}
     <p><strong>First Name:</strong> {{ order.address.first_name }}</p>
     <p><strong>Last Name:</strong> {{ order.address.last_name }}</p>
@@ -114,7 +106,7 @@
 
 {% endif %}
                 </p>
-                {% comment %} <p>Delivery Date: {{ order.delivery_date|date:"d M Y" }}</p> {% endcomment %}
+                
                 <p><strong>Delivery Date:</strong> 
                     {% if order.delivery_date %}
                         {{ order.delivery_date|date:"d M Y" }}

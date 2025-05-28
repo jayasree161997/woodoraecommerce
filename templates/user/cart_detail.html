@@ -407,17 +407,21 @@
 <body>
     <h1>Your Shopping Cart</h1>
     <div class="cart-page">
+        {% if coupon_error %}
+  <p class="text-danger">{{ coupon_error }}</p>
+{% endif %}
+
         <div class="cart-items">
             {% for item in cart_items %}
-            {% comment %} <div class="cart-item {% if not item.product.category.is_active %}unavailable{% endif %}"> {% endcomment %}
-            <div class="cart-item {% if not item.product.category.is_active or item.product.stock == 0 %}unavailable{% endif %}">
+            {% comment %} <div class="cart-item {% if not item.product.category.is_active or item.product.stock == 0 %}unavailable{% endif %}"> {% endcomment %}
+            <div class="cart-item {% if item.product.is_deleted or not item.product.category.is_active or item.product.stock == 0 %}unavailable{% endif %}">
                 <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="product-image">
                 
                 <div class="item-details">
                     <h4>{{ item.product.name }}</h4>
             
-                    {% comment %} {% if not item.product.category.is_active %} {% endcomment %}
-                    {% if not item.product.category.is_active or item.product.stock == 0 %}
+                    {% comment %} {% if not item.product.category.is_active or item.product.stock == 0 %} {% endcomment %}
+                    {% if item.product.is_deleted or not item.product.category.is_active or item.product.stock == 0 %}
                          <p class="text-danger">🚫This product is currently unavailable</p>
                     {% else %}
                         <p>Price: ₹{{ item.price }}</p>
@@ -426,34 +430,23 @@
                     {% endif %}
                     
             
-                    {% comment %} {% if item.variant %}
-                      <p>Variant: {{ item.variant.name }}</p>
-                    {% endif %}
-                   
-                    <p>Price: ₹{{ item.price }}</p>
-
-                    <p>Stock: 
-                        {% if item.variant %}
-                            {{ item.variant.stock }}
-                        {% else %}
-                            {{ item.product.stock }}
-                        {% endif %}
-                    </p> {% endcomment %}
-            
                     <p>
                         Quantity:
-                        {% comment %} <button type="button" onclick="changeQuantity('{{ item.id }}', -1, {{ item.price }}, {% else %}{{ item.product.stock }}{% endif %})" {% if not item.product.category.is_active %}disabled{% endif %}>−</button> {% endcomment %}
+
                         <button type="button" onclick="changeQuantity('{{ item.id }}', -1, {{ item.price }}, {{ item.product.stock }})" 
-                                {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>−</button>
+                                {% comment %} {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>−</button> {% endcomment %}
+                                {% if item.product.is_deleted or not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>−</button>
             
                        
                          <input type="number" id="quantity-{{ item.id }}" name="quantity" value="{{ item.quantity }}" min="0" max="6"
                                onchange="updatePrice('{{ item.id }}', {{ item.price }}, {{ item.product.stock }})"
-                               {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>
+                               {% comment %} {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}> {% endcomment %}
+                               {% if item.product.is_deleted or not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}></button>
             
                         
                           <button type="button" onclick="changeQuantity('{{ item.id }}', 1, {{ item.price }}, {{ item.product.stock }})" 
-                                {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>+</button>
+                                {% comment %} {% if not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>+</button> {% endcomment %}
+                                {% if item.product.is_deleted or not item.product.category.is_active or item.product.stock == 0 %}disabled{% endif %}>+</button>
                     </p>
             
                     
@@ -464,12 +457,14 @@
                     <a href="{% url 'move_to_wishlist' item.product.id %}" class="wishlist-button">Move to Wishlist</a>
                 </div>
             </div>
-            {% if not item.product.category.is_active or item.product.stock == 0 %}
+           
+            
+        {% comment %} {% if item.product.is_deleted or not item.product.category.is_active or item.product.stock == 0 %}{% endif %}</button> {% endcomment %}
+        {% if not item.product.category.is_active or item.product.stock == 0 %}
         <div class="remove-container">
             <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-danger btn-sm">Remove</a>
-        </div>
-        {% endif %}
-            
+        </div> 
+        {% endif %}       
             {% endfor %}
         </div>
 

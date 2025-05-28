@@ -15,6 +15,8 @@ from django.utils.crypto import get_random_string
 import os
 from django.utils.timezone import now
 import datetime
+import pytz
+from django.utils.timezone import localtime
 from django.utils import timezone
 from datetime import datetime
 from .utils import send_otp_to_email
@@ -68,6 +70,7 @@ logger = logging.getLogger(__name__)
 client = razorpay.Client(auth=("rzp_test_4MBYamMKeUifHI", "jCW28TZMPhifXUXSBo4CVB8I"))
 
 # Create your views here.
+@never_cache
 def index(request):
     return render(request,'user/index.html')
 
@@ -80,8 +83,11 @@ def google_login_redirect(request):
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
-
+@never_cache
 def user_login(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+    
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -105,7 +111,7 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 auth_login(request, user)   
-                return render(request, "user/index.html")
+                return redirect('index')
         else:
             messages.error(request, 'Invalid email address or password. Please try again.')
             return redirect('login')
@@ -308,7 +314,7 @@ def delete_address(request, address_id):
     return redirect(next_url)
 
 
-
+@login_required
 def cart(request):
     return render(request,'user/cart_detail.html')
 
@@ -328,16 +334,24 @@ def checkout(request):
     valid_cart_items = []
     unavailable_items = []
 
+    # for item in cart_items:
+    #     if not item.product.category.is_active :
+    #         unavailable_items.append(item)  # Store unavailable items
+    #     else:
+    #         valid_cart_items.append(item)  # Only process valid items
     for item in cart_items:
-        if not item.product.category.is_active:
-            unavailable_items.append(item)  # Store unavailable items
+        product = item.product
+        category_active = product.category.is_active if product.category else True
+
+        if product.is_deleted or not (product.is_active and category_active and product.stock > 0):
+            unavailable_items.append(item)  # Mark unavailable products
         else:
-            valid_cart_items.append(item)  # Only process valid items
+            valid_cart_items.append(item)
 
     # If all items are inactive, redirect
     if not valid_cart_items:
         messages.error(request, "All items in your cart are unavailable. Please update your cart.")
-        return redirect('cartpage')
+        return redirect('cart')
 
     #  Prepare checkout calculation with only valid items
     cart_items_with_total = []
@@ -611,10 +625,18 @@ def place_order(request):
                 razorpay_order = client.order.create({'amount': amount_in_paise, 'currency': 'INR', 'payment_capture': '1'})
                 order.razorpay_order_id = razorpay_order.get('id')
                 order.save()
+
+                request.session.pop('coupon_id', None)
+                request.session.pop('applied_coupon', None)
+                   
                 return redirect('initiate_payment', order_id=order.id)
+            
             except Exception as e:
                 messages.error(request, "Error processing Razorpay payment: " + str(e))
-                order.delete()
+
+                order.status = "Failed"
+                order.save()
+                # order.delete()
                 return redirect('checkoutpage')
 
         #  Redirect to order confirmation
@@ -1033,6 +1055,10 @@ def generate_invoice_data(order_id):
     except Order.DoesNotExist:
         return None
     
+    india_tz = pytz.timezone("Asia/Kolkata")
+    created_at_ist = localtime(order.created_at, india_tz)
+    delivery_date_ist = localtime(order.delivery_date, india_tz)
+    
     
 
     if order.address:
@@ -1049,6 +1075,12 @@ def generate_invoice_data(order_id):
        
         shipping_address = "Address not available."
 
+    order_items = order.order_items.all()
+    grand_subtotal = 0
+    for item in order_items:
+        item.subtotal = item.quantity * item.product.price
+        grand_subtotal += item.subtotal
+
 
     invoice_data = {
         'order_id': order.id,
@@ -1057,7 +1089,11 @@ def generate_invoice_data(order_id):
         'total_price': order.total_price,
         'shipping_address': shipping_address,
         'delivery_date': order.delivery_date,
-        'order_items': order.order_items.all(), 
+        'created_at': order.created_at,
+        'created_at': created_at_ist,              # ✅ Localized datetime
+        'delivery_date': delivery_date_ist,
+        'order_items': order_items,  
+        'grand_subtotal': grand_subtotal, 
         'coupon': order.coupon,  
         'discount_amount': order.discount_amount,
         

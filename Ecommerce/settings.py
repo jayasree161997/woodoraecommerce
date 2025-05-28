@@ -212,8 +212,8 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '',
-            'secret': '',
+            'client_id': '318951295751-dvhj4hrmos37mmbn3c9las9mjphtr042.apps.googleusercontent.com',
+            'secret': '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',
 
             'key': ''
         },

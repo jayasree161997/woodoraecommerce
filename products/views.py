@@ -22,14 +22,15 @@ import traceback
 
 
 
-
+@login_required
 def products(request):
     category_id = request.GET.get('category_id')
     sort_option = request.GET.get('sort')
     search_query = request.GET.get('search', '').strip()
 
-    # products = Product.objects.all()
-    products = Product.objects.filter(category__is_active=True).order_by('id')
+    
+    # products = Product.objects.filter(is_active=True, category__is_active=True).order_by('id')
+    products = Product.objects.filter(is_active=True, category__is_active=True).order_by('-id')
  
 
     if category_id:
@@ -51,7 +52,7 @@ def products(request):
     elif sort_option == 'name_desc':
         products = products.order_by('-name')
     else:
-        products = products.order_by('id') 
+        products = products.order_by('-id') 
 
     # Pagination
     paginator = Paginator(products, 9)
@@ -71,10 +72,11 @@ def products(request):
     })
 
 
+@login_required
 def product_details(request, product_id):
-    product = get_object_or_404(Product, id=product_id, category__is_active=True)
+    product = get_object_or_404(Product, id=product_id, is_active=True, category__is_active=True)
     variants = ProductVariant.objects.filter(product=product)
-    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:6]
+    related_products = Product.objects.filter(category=product.category,is_active=True).exclude(id=product.id)[:6]
 
     now = timezone.now()
     offer_price = None
@@ -143,17 +145,19 @@ def category_detail(request, category_id):
 
 
 
-
+@login_required
 def add_to_cart(request, product_id):
-    # Get the product object
+    # if not request.user.is_authenticated:
+    #     return redirect('login')
+    
     product = get_object_or_404(Product, id=product_id)
 
     if product.stock == 0:
-        return redirect('cart_detail')  # If the product is out of stock
+        return redirect('cart_detail')  
 
-    # Calculate the offer price
+   
     now = timezone.now()
-    offer_price = product.price  # Default price
+    offer_price = product.price  
 
     # Check for Product Offer
     product_offer = ProductOffer.objects.filter(
@@ -220,10 +224,18 @@ def cart_detail(request):
 
 
     for item in cart_items:
-        if not item.product.category.is_active:
+        product = item.product
+        category_active = product.category.is_active if product.category else True
+
+        # if not item.product.category.is_active:
+        # if not (product.is_active and category_active and product.stock > 0):
+        #     unavailable_items.append(item)
+
+        # elif item.product.stock == 0:
+        #     unavailable_items.append(item)
+        if product.is_deleted or not (product.is_active and category_active and product.stock > 0):
             unavailable_items.append(item)
-        elif item.product.stock == 0:
-            unavailable_items.append(item)
+
         else:
             item.quantity = min(item.quantity, item.product.stock)
             item.save()
@@ -293,6 +305,8 @@ def cart_detail(request):
         'coupon_form': coupon_form,
         'cart': cart,
         'discount_amount': discount_amount,
+        # 'available_items': updated_items,  
+        # 'unavailable_items': unavailable_items,
         'final_price': final_price,
         'available_coupons': available_coupons,
     }
@@ -321,6 +335,12 @@ def update_cart_quantity(request):
 
             cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
 
+
+
+            if cart_item.product.category and not cart_item.product.category.is_active:
+                cart_item.delete()  # Remove item from cart if the category was deleted
+                return JsonResponse({"success": False, "error": "This product's category has been deleted, and it was removed from your cart."})
+
             # Check available stock (variant vs product)
             stock = cart_item.variant.stock if cart_item.variant else cart_item.product.stock
             if quantity > stock:
@@ -330,7 +350,8 @@ def update_cart_quantity(request):
             cart_item.save()
 
             # Recalculate total price and total items in the cart
-            cart_items = CartItem.objects.filter(cart=cart_item.cart)
+            # cart_items = CartItem.objects.filter(cart=cart_item.cart)
+            cart_items = CartItem.objects.filter(cart=cart_item.cart, product__stock__gt=0, product__category__is_active=True)  # Only count available products
            
             total_price = sum(item.quantity * item.price for item in cart_items)
 
@@ -464,6 +485,7 @@ def apply_coupon(request):
     if request.method == "POST":
         form = CouponApplyForm(request.POST)
         if form.is_valid():
+            cart = request.user.cart
             code = form.cleaned_data["code"]
             now = timezone.now()
 
@@ -493,6 +515,8 @@ def apply_coupon(request):
             }
                 coupon.usage_limit -= 1
                 coupon.save()
+                cart.coupon_applied = True
+                cart.save()
 
                 messages.success(request, f"Coupon '{coupon.code}' applied successfully!")
             except Coupon.DoesNotExist:
@@ -531,6 +555,7 @@ def remove_coupon(request):
         cart = Cart.objects.get(user=request.user)
         cart.coupon_code = ""
         cart.discount_amount = 0
+        cart.coupon_applied = False
         cart.save()
     except Cart.DoesNotExist:
         pass  # Optional: handle missing cart

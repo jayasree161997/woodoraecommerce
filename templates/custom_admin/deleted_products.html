@@ -1,0 +1,32 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Deleted Products</h2>
+
+    {% if deleted_products %}
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Brand</th>
+                    <th>Price</th>
+                    <th>Deleted On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in deleted_products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>₹{{ product.price }}</td>
+                    <td>{{ product.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-muted">No deleted products found.</p>
+    {% endif %}
+</div>
+{% endblock %}
